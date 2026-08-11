@@ -17,6 +17,11 @@
                 <x:Type TypeName="models:AudioSourceType"/>
             </ObjectDataProvider.MethodParameters>
         </ObjectDataProvider>
+        <ObjectDataProvider x:Key="RowStatusValues" MethodName="GetValues" ObjectType="{x:Type sys:Enum}">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="models:RowStatus"/>
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
     </Window.Resources>
     <Grid Margin="10">
         <Grid.RowDefinitions>
@@ -153,6 +158,10 @@
                 <DataGridCheckBoxColumn Header="{DynamicResource Str_ColumnOn}" Binding="{Binding Enabled, UpdateSourceTrigger=PropertyChanged}" Width="40"/>
                 <DataGridTextColumn Header="{DynamicResource Str_ColumnMessageId}" Binding="{Binding MsgId}" IsReadOnly="True" Width="200"/>
                 <DataGridTextColumn Header="{DynamicResource Str_ColumnWavFile}" Binding="{Binding WavFileName}" IsReadOnly="True" Width="150"/>
+                <DataGridCheckBoxColumn Header="{DynamicResource Str_ColumnExported}" Binding="{Binding IsExported}" IsReadOnly="True" Width="90"/>
+                <DataGridComboBoxColumn Header="{DynamicResource Str_ColumnStatus}" Width="110"
+                                         ItemsSource="{Binding Source={StaticResource RowStatusValues}}"
+                                         SelectedItemBinding="{Binding Status, UpdateSourceTrigger=PropertyChanged}"/>
                 <DataGridTextColumn Header="{DynamicResource Str_ColumnText}" Binding="{Binding Text, UpdateSourceTrigger=PropertyChanged}" Width="*"/>
                 <DataGridComboBoxColumn Header="{DynamicResource Str_ColumnSource}" Width="110"
                                          ItemsSource="{Binding Source={StaticResource SourceTypeValues}}"

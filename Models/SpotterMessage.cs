@@ -15,6 +15,8 @@ namespace iRacing_Spotter_Generator.Models
         private AudioSourceType _sourceType = AudioSourceType.GoogleAi;
         private string? _googleVoiceName;
         private string? _recordedTakePath;
+        private RowStatus _status = RowStatus.ToDo;
+        private bool _isExported;
 
         /// <summary>
         /// Stable identifier for this row, used to keep a persistent per-row
@@ -72,6 +74,28 @@ namespace iRacing_Spotter_Generator.Models
         {
             get => _recordedTakePath;
             set => SetField(ref _recordedTakePath, value);
+        }
+
+        /// <summary>
+        /// User-tracked review status (To Do / Satisfactory / Done), persisted
+        /// with the project so authors can keep track of what still needs work.
+        /// </summary>
+        public RowStatus Status
+        {
+            get => _status;
+            set => SetField(ref _status, value);
+        }
+
+        /// <summary>
+        /// Transient (not persisted) flag indicating whether this row's wav file
+        /// is already up to date in the last export output folder. Recomputed via
+        /// <see cref="Services.PackGenerator.GetPendingMessages"/> after generation
+        /// and on project load, never saved to the project file.
+        /// </summary>
+        public bool IsExported
+        {
+            get => _isExported;
+            set => SetField(ref _isExported, value);
         }
 
         /// <summary>

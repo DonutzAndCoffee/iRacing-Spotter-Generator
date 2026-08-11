@@ -145,7 +145,7 @@ namespace iRacing_Spotter_Generator.Services
                 var currentHash = ComputeMessageHash(message, options);
                 if (options.OnlyGenerateChanged &&
                     File.Exists(wavPath) &&
-                    manifest.EntryHashes.TryGetValue(message.MsgId, out var previousHash) &&
+                    manifest.EntryHashes.TryGetValue(wavFileName, out var previousHash) &&
                     previousHash == currentHash)
                 {
                     progress?.Report(new PackGenerationProgress
@@ -234,7 +234,7 @@ namespace iRacing_Spotter_Generator.Services
                         break;
                 }
 
-                manifest.EntryHashes[message.MsgId] = currentHash;
+                manifest.EntryHashes[wavFileName] = currentHash;
 
                 progress?.Report(new PackGenerationProgress
                 {
@@ -281,7 +281,7 @@ namespace iRacing_Spotter_Generator.Services
 
                 var currentHash = ComputeMessageHash(message, options);
                 var unchanged = File.Exists(wavPath) &&
-                    manifest.EntryHashes.TryGetValue(message.MsgId, out var previousHash) &&
+                    manifest.EntryHashes.TryGetValue(wavFileName, out var previousHash) &&
                     previousHash == currentHash;
 
                 if (!unchanged)

@@ -39,6 +39,8 @@
     <sys:String x:Key="Str_ColumnOn">An</sys:String>
     <sys:String x:Key="Str_ColumnMessageId">Message ID</sys:String>
     <sys:String x:Key="Str_ColumnWavFile">Wav-Datei</sys:String>
+    <sys:String x:Key="Str_ColumnExported">Exportiert</sys:String>
+    <sys:String x:Key="Str_ColumnStatus">Status</sys:String>
     <sys:String x:Key="Str_ColumnText">Text</sys:String>
     <sys:String x:Key="Str_ColumnSource">Quelle</sys:String>
     <sys:String x:Key="Str_ColumnAiVoice">KI-Stimme</sys:String>

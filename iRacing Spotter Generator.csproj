@@ -14,6 +14,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="TESTS\**" />
+    <EmbeddedResource Remove="TESTS\**" />
+    <None Remove="TESTS\**" />
+    <Page Remove="TESTS\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="NAudio" Version="2.2.1" />
   </ItemGroup>
 

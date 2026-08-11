@@ -711,7 +711,8 @@ namespace iRacing_Spotter_Generator
                         RecordedTakePath = message.RecordedTakePath,
                         AllTakes = message.AllTakes.Select(t => new TakeInfo { FilePath = t.FilePath, Name = t.Name, Rating = t.Rating }).ToList(),
                         IsComment = message.IsComment,
-                        RawLine = message.RawLine
+                        RawLine = message.RawLine,
+                        Status = message.Status
                     });
                 }
 
@@ -800,7 +801,8 @@ namespace iRacing_Spotter_Generator
                         RecordedTakePath = message.RecordedTakePath,
                         AllTakes = message.AllTakes.Select(t => new TakeInfo { FilePath = t.FilePath, Name = t.Name, Rating = t.Rating }).ToList(),
                         IsComment = message.IsComment,
-                        RawLine = message.RawLine
+                        RawLine = message.RawLine,
+                        Status = message.Status
                     });
                 }
 
@@ -819,6 +821,7 @@ namespace iRacing_Spotter_Generator
                 PackNameTextBox.Text = project.PackName;
 
                 RefreshView(FilterTextBox.Text);
+                RefreshExportedFlags();
                 StatusTextBlock.Text = $"{LocalizationManager.GetString("Str_ProjectLoaded")} {dialog.FileName}";
                 _isDirty = false;
             }
@@ -826,6 +829,65 @@ namespace iRacing_Spotter_Generator
             {
                 MessageBox.Show(this, $"{LocalizationManager.GetString("Str_ProjectLoadFailed")} {ex.Message}",
                     LocalizationManager.GetString("Str_OpenProjectTitle"), MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        /// <summary>
+        /// Builds the PackGenerationOptions used for both real generation and
+        /// the pending-sounds preview, based on current settings/UI state.
+        /// </summary>
+        private PackGenerationOptions BuildPackGenerationOptions(string outputFolder)
+        {
+            return new PackGenerationOptions
+            {
+                OutputFolder = outputFolder,
+                GoogleApiKey = _settings.GoogleApiKey,
+                DefaultGoogleVoiceName = _settings.DefaultGoogleVoiceName,
+                GoogleOutputSampleRate = _settings.RecordingSampleRate,
+                GoogleOutputBitsPerSample = _settings.RecordingBitsPerSample,
+                SquelchEnabled = _settings.SquelchEnabled,
+                SquelchDurationMs = _settings.SquelchDurationMs,
+                SquelchVolume = _settings.SquelchVolume,
+                RequiredMsgIds = _knownMsgIds,
+                OnlyGenerateChanged = OnlyChangedCheckBox.IsChecked == true
+            };
+        }
+
+        /// <summary>
+        /// Recomputes each message's IsExported flag by checking which rows
+        /// would be skipped (i.e. already up to date) on the next export,
+        /// so the "Already exported" column reflects the real manifest state.
+        /// </summary>
+        private void RefreshExportedFlags()
+        {
+            if (string.IsNullOrWhiteSpace(DestinationTextBox.Text))
+            {
+                foreach (var message in _allMessages)
+                {
+                    message.IsExported = false;
+                }
+                return;
+            }
+
+            var packName = string.IsNullOrWhiteSpace(PackNameTextBox.Text) ? "MySpotterPack" : PackNameTextBox.Text.Trim();
+            var outputFolder = Path.Combine(DestinationTextBox.Text, packName);
+            var options = BuildPackGenerationOptions(outputFolder);
+            options.OnlyGenerateChanged = true;
+
+            try
+            {
+                var pending = new HashSet<SpotterMessage>(PackGenerator.GetPendingMessages(_allMessages, options));
+                foreach (var message in _allMessages)
+                {
+                    message.IsExported = message.Enabled && !string.IsNullOrWhiteSpace(message.Text) && !pending.Contains(message);
+                }
+            }
+            catch (Exception)
+            {
+                foreach (var message in _allMessages)
+                {
+                    message.IsExported = false;
+                }
             }
         }
 
@@ -859,20 +921,7 @@ namespace iRacing_Spotter_Generator
 
             var packName = string.IsNullOrWhiteSpace(PackNameTextBox.Text) ? "MySpotterPack" : PackNameTextBox.Text.Trim();
             var outputFolder = Path.Combine(DestinationTextBox.Text, packName);
-
-            var options = new PackGenerationOptions
-            {
-                OutputFolder = outputFolder,
-                GoogleApiKey = _settings.GoogleApiKey,
-                DefaultGoogleVoiceName = _settings.DefaultGoogleVoiceName,
-                GoogleOutputSampleRate = _settings.RecordingSampleRate,
-                GoogleOutputBitsPerSample = _settings.RecordingBitsPerSample,
-                SquelchEnabled = _settings.SquelchEnabled,
-                SquelchDurationMs = _settings.SquelchDurationMs,
-                SquelchVolume = _settings.SquelchVolume,
-                RequiredMsgIds = _knownMsgIds,
-                OnlyGenerateChanged = OnlyChangedCheckBox.IsChecked == true
-            };
+            var options = BuildPackGenerationOptions(outputFolder);
 
             try
             {
@@ -899,19 +948,7 @@ namespace iRacing_Spotter_Generator
             var packName = string.IsNullOrWhiteSpace(PackNameTextBox.Text) ? "MySpotterPack" : PackNameTextBox.Text.Trim();
             var outputFolder = Path.Combine(DestinationTextBox.Text, packName);
 
-            var options = new PackGenerationOptions
-            {
-                OutputFolder = outputFolder,
-                GoogleApiKey = _settings.GoogleApiKey,
-                DefaultGoogleVoiceName = _settings.DefaultGoogleVoiceName,
-                GoogleOutputSampleRate = _settings.RecordingSampleRate,
-                GoogleOutputBitsPerSample = _settings.RecordingBitsPerSample,
-                SquelchEnabled = _settings.SquelchEnabled,
-                SquelchDurationMs = _settings.SquelchDurationMs,
-                SquelchVolume = _settings.SquelchVolume,
-                RequiredMsgIds = _knownMsgIds,
-                OnlyGenerateChanged = OnlyChangedCheckBox.IsChecked == true
-            };
+            var options = BuildPackGenerationOptions(outputFolder);
 
             GenerateButton.IsEnabled = false;
             GenerationProgressBar.Value = 0;
@@ -929,6 +966,7 @@ namespace iRacing_Spotter_Generator
                 await PackGenerator.GenerateAsync(_allMessages, options, progress);
                 StatusTextBlock.Text = LocalizationManager.GetString("Str_Done");
                 RefreshPendingSoundsList();
+                RefreshExportedFlags();
                 MessageBox.Show(this, $"{LocalizationManager.GetString("Str_PackGeneratedSuccess")}\n{outputFolder}",
                     LocalizationManager.GetString("Str_AppTitle"), MessageBoxButton.OK, MessageBoxImage.Information);
             }

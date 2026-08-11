@@ -40,5 +40,6 @@ namespace iRacing_Spotter_Generator.Models
         public List<TakeInfo> AllTakes { get; set; } = new();
         public bool IsComment { get; set; }
         public string RawLine { get; set; } = string.Empty;
+        public RowStatus Status { get; set; } = RowStatus.ToDo;
     }
 }
