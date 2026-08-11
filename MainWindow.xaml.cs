@@ -335,6 +335,30 @@ namespace iRacing_Spotter_Generator
             DuplicateMessage(message);
         }
 
+        /// <summary>
+        /// Lets the checkbox columns (Enabled, √Start, √End, ...) toggle on
+        /// the very first click even when the row/cell wasn't selected yet,
+        /// instead of requiring one click to select and a second to toggle.
+        /// </summary>
+        private void MessagesDataGrid_PreviewMouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            var dependencyObject = e.OriginalSource as DependencyObject;
+            while (dependencyObject is not null and not DataGridCell)
+            {
+                dependencyObject = System.Windows.Media.VisualTreeHelper.GetParent(dependencyObject);
+            }
+
+            if (dependencyObject is DataGridCell { Content: CheckBox } cell && !cell.IsEditing)
+            {
+                if (!cell.IsFocused)
+                {
+                    cell.Focus();
+                }
+
+                MessagesDataGrid.BeginEdit(e);
+            }
+        }
+
         private void RemoveMenuItem_Click(object sender, RoutedEventArgs e)
         {
             if (sender is not System.Windows.Controls.MenuItem { DataContext: SpotterMessage message })
@@ -525,22 +549,38 @@ namespace iRacing_Spotter_Generator
                 if (!string.IsNullOrWhiteSpace(message.RecordedTakePath) && File.Exists(message.RecordedTakePath))
                 {
                     var takePath = message.RecordedTakePath;
+                    var sampleRate = _settings.RecordingSampleRate;
+                    var bitsPerSample = _settings.RecordingBitsPerSample;
                     var squelchEnabled = _settings.SquelchEnabled;
                     var squelchDurationMs = _settings.SquelchDurationMs;
                     var squelchVolume = _settings.SquelchVolume;
+                    var addSquelchStart = message.AddSquelchStart;
+                    var addSquelchEnd = message.AddSquelchEnd;
 
                     Task.Run(() =>
                     {
-                        string playbackPath = takePath;
-                        string? tempPath = null;
+                        var convertedPath = Path.Combine(Path.GetTempPath(), $"iracing_preview_conv_{Guid.NewGuid():N}.wav");
+                        var squelchedPath = Path.Combine(Path.GetTempPath(), $"iracing_preview_{Guid.NewGuid():N}.wav");
 
                         try
                         {
+                            // Downsample the raw (high quality) take to the
+                            // configured target quality first, exactly like
+                            // the pack export does, so the preview matches
+                            // what will end up in the final pack.
+                            AudioFormatConverter.ConvertFile(takePath, convertedPath, sampleRate, bitsPerSample);
+
+                            string playbackPath;
                             if (squelchEnabled)
                             {
-                                tempPath = Path.Combine(Path.GetTempPath(), $"iracing_preview_{Guid.NewGuid():N}.wav");
-                                SquelchEffectGenerator.ApplySquelch(takePath, tempPath, squelchDurationMs, squelchVolume);
-                                playbackPath = tempPath;
+                                SquelchEffectGenerator.ApplySquelch(
+                                    convertedPath, squelchedPath, squelchDurationMs, squelchVolume,
+                                    addSquelchStart, addSquelchEnd);
+                                playbackPath = squelchedPath;
+                            }
+                            else
+                            {
+                                playbackPath = convertedPath;
                             }
 
                             using var player = new System.Media.SoundPlayer(playbackPath);
@@ -548,11 +588,11 @@ namespace iRacing_Spotter_Generator
                         }
                         finally
                         {
-                            if (tempPath is not null)
+                            foreach (var tempFile in new[] { convertedPath, squelchedPath })
                             {
                                 try
                                 {
-                                    File.Delete(tempPath);
+                                    File.Delete(tempFile);
                                 }
                                 catch (IOException)
                                 {

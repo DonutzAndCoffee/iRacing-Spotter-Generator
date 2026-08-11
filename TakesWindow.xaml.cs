@@ -114,7 +114,7 @@ namespace iRacing_Spotter_Generator
             _playbackTimer.Tick += PlaybackTimer_Tick;
 
             MessageTextBlock.Text = $"{msgId}: \"{messageText}\"";
-            QualityTextBlock.Text = $"Aufnahmequalität: {sampleRate} Hz / {bitsPerSample} Bit (wie iRacing)";
+            QualityTextBlock.Text = $"Aufnahme in hoher Qualität, Export in Zielqualität: {sampleRate} Hz / {bitsPerSample} Bit (wie iRacing)";
             TakesListBox.ItemsSource = _takes;
 
             // Use a stable, per-row folder (keyed by the message's own id)
@@ -187,7 +187,10 @@ namespace iRacing_Spotter_Generator
 
             try
             {
-                _recorder.Start(filePath, _sampleRate, _bitsPerSample);
+                // Always record at the recorder's own high-quality default so
+                // the raw take doesn't lose quality; downsampling to the
+                // target quality happens only on preview/export.
+                _recorder.Start(filePath);
                 RecordButton.Content = "■ Aufnahme stoppen";
                 RecordingStatusTextBlock.Text = "Aufnahme läuft...";
             }
@@ -208,7 +211,7 @@ namespace iRacing_Spotter_Generator
             try
             {
                 using var player = new SoundPlayer(take.FilePath);
-                player.Play();
+                player.PlaySync();
             }
             catch (Exception ex)
             {
@@ -423,7 +426,8 @@ namespace iRacing_Spotter_Generator
                 _trimPlaybackRegionStart = TrimStartSlider.Value;
                 _trimPlaybackRegionEnd = TrimEndSlider.Value;
 
-                _trimReader = new AudioFileReader(take.FilePath);
+                var playbackPath = take.FilePath;
+                _trimReader = new AudioFileReader(playbackPath);
                 _trimReader.CurrentTime = TimeSpan.FromSeconds(Math.Clamp(startSeconds, _trimPlaybackRegionStart, _trimPlaybackRegionEnd));
 
                 _trimPlayer = new WaveOutEvent();

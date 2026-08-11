@@ -131,7 +131,8 @@
         <!-- Message grid -->
         <DataGrid x:Name="MessagesDataGrid" Grid.Row="3" AutoGenerateColumns="False"
                    CanUserAddRows="False" CanUserDeleteRows="False"
-                   ItemsSource="{Binding}" SelectionMode="Extended">
+                   ItemsSource="{Binding}" SelectionMode="Extended"
+                   PreviewMouseLeftButtonDown="MessagesDataGrid_PreviewMouseLeftButtonDown">
             <DataGrid.Resources>
                 <ContextMenu x:Key="RowContextMenu">
                     <MenuItem Header="{DynamicResource Str_Duplicate}" Click="DuplicateMenuItem_Click"/>

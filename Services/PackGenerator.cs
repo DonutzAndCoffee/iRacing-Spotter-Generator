@@ -56,9 +56,9 @@ namespace iRacing_Spotter_Generator.Services
         public string? DefaultGoogleVoiceName { get; set; }
 
         /// <summary>
-        /// Sample rate (Hz) that generated Google AI audio is downsampled to,
-        /// so it sounds like iRacing's own spotter radio. Recordings are already
-        /// captured at this quality and are left untouched.
+        /// Sample rate (Hz) that generated Google AI audio, as well as raw
+        /// (high quality) recorded takes, are downsampled to on export so
+        /// they sound like iRacing's own spotter radio.
         /// </summary>
         public int GoogleOutputSampleRate { get; set; } = 5512;
 
@@ -166,15 +166,37 @@ namespace iRacing_Spotter_Generator.Services
                                 $"'{message.MsgId}' is set to use a recording, but no take has been recorded yet.");
                         }
 
-                        if (options.SquelchEnabled)
+                        // Recordings are captured in high quality; downsample
+                        // to the target quality only now, at export time.
+                        var convertedRecordingPath = Path.Combine(
+                            Path.GetTempPath(), $"spgen_rec_conv_{Guid.NewGuid():N}.wav");
+                        try
                         {
-                            SquelchEffectGenerator.ApplySquelch(
-                                message.RecordedTakePath, wavPath, options.SquelchDurationMs, options.SquelchVolume,
-                                message.AddSquelchStart, message.AddSquelchEnd);
+                            AudioFormatConverter.ConvertFile(
+                                message.RecordedTakePath, convertedRecordingPath,
+                                options.GoogleOutputSampleRate, options.GoogleOutputBitsPerSample);
+
+                            if (options.SquelchEnabled)
+                            {
+                                SquelchEffectGenerator.ApplySquelch(
+                                    convertedRecordingPath, wavPath, options.SquelchDurationMs, options.SquelchVolume,
+                                    message.AddSquelchStart, message.AddSquelchEnd);
+                            }
+                            else
+                            {
+                                File.Copy(convertedRecordingPath, wavPath, overwrite: true);
+                            }
                         }
-                        else
+                        finally
                         {
-                            File.Copy(message.RecordedTakePath, wavPath, overwrite: true);
+                            try
+                            {
+                                File.Delete(convertedRecordingPath);
+                            }
+                            catch (IOException)
+                            {
+                                // Ignore cleanup failures for temp conversion files.
+                            }
                         }
                         break;
 

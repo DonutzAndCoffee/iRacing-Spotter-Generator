@@ -18,9 +18,12 @@ namespace iRacing_Spotter_Generator.Services
 
         /// <summary>
         /// Starts recording using the given sample rate / bits per sample (mono).
-        /// Defaults match iRacing's own spotter sample format (5512 Hz, 8-bit).
+        /// Defaults to a high quality format (44100 Hz, 16-bit) so the raw
+        /// take retains as much quality as possible; downsampling to the
+        /// iRacing-style format (e.g. 5512 Hz, 8-bit) only happens later, when
+        /// previewing/playing back or exporting the pack.
         /// </summary>
-        public void Start(string outputFilePath, int sampleRate = 5512, int bitsPerSample = 8)
+        public void Start(string outputFilePath, int sampleRate = 44100, int bitsPerSample = 16)
         {
             if (IsRecording)
             {
