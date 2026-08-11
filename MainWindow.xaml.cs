@@ -735,7 +735,15 @@ namespace iRacing_Spotter_Generator
                 var project = new SpotterProject
                 {
                     DestinationFolder = DestinationTextBox.Text,
-                    PackName = PackNameTextBox.Text
+                    PackName = PackNameTextBox.Text,
+                    RecordingSampleRate = SampleRateComboBox.SelectedItem is int rate ? rate : _settings.RecordingSampleRate,
+                    RecordingBitsPerSample = BitsPerSampleComboBox.SelectedItem is int bits ? bits : _settings.RecordingBitsPerSample,
+                    SquelchEnabled = SquelchEnabledCheckBox.IsChecked == true,
+                    SquelchDurationMs = int.TryParse(SquelchDurationTextBox.Text, out var durationMs) ? durationMs : _settings.SquelchDurationMs,
+                    SquelchVolume = double.TryParse(
+                        SquelchVolumeTextBox.Text, System.Globalization.NumberStyles.Float,
+                        System.Globalization.CultureInfo.InvariantCulture, out var volume) ? volume : _settings.SquelchVolume,
+                    DefaultGoogleVoiceName = DefaultVoiceComboBox.SelectedValue as string ?? _settings.DefaultGoogleVoiceName
                 };
 
                 foreach (var message in _allMessages)
@@ -859,6 +867,20 @@ namespace iRacing_Spotter_Generator
 
                 DestinationTextBox.Text = project.DestinationFolder;
                 PackNameTextBox.Text = project.PackName;
+
+                _settings.RecordingSampleRate = project.RecordingSampleRate ?? _settings.RecordingSampleRate;
+                _settings.RecordingBitsPerSample = project.RecordingBitsPerSample ?? _settings.RecordingBitsPerSample;
+                _settings.SquelchEnabled = project.SquelchEnabled ?? _settings.SquelchEnabled;
+                _settings.SquelchDurationMs = project.SquelchDurationMs ?? _settings.SquelchDurationMs;
+                _settings.SquelchVolume = project.SquelchVolume ?? _settings.SquelchVolume;
+                _settings.DefaultGoogleVoiceName = project.DefaultGoogleVoiceName ?? _settings.DefaultGoogleVoiceName;
+
+                SampleRateComboBox.SelectedItem = _settings.RecordingSampleRate;
+                BitsPerSampleComboBox.SelectedItem = _settings.RecordingBitsPerSample;
+                SquelchEnabledCheckBox.IsChecked = _settings.SquelchEnabled;
+                SquelchDurationTextBox.Text = _settings.SquelchDurationMs.ToString();
+                SquelchVolumeTextBox.Text = _settings.SquelchVolume.ToString(System.Globalization.CultureInfo.InvariantCulture);
+                DefaultVoiceComboBox.SelectedValue = _settings.DefaultGoogleVoiceName;
 
                 RefreshView(FilterTextBox.Text);
                 RefreshExportedFlags();

@@ -23,6 +23,47 @@ namespace iRacing_Spotter_Generator.Models
         /// All spotter message rows, in their current edited state.
         /// </summary>
         public List<SpotterProjectMessage> Messages { get; set; } = new();
+
+        /// <summary>
+        /// Sample rate (Hz) used when recording/generating own takes for this
+        /// project. Null for projects saved before this setting became
+        /// project-specific, in which case the global default applies.
+        /// </summary>
+        public int? RecordingSampleRate { get; set; }
+
+        /// <summary>
+        /// Bits per sample used when recording/generating own takes for this
+        /// project. Null for projects saved before this setting became
+        /// project-specific, in which case the global default applies.
+        /// </summary>
+        public int? RecordingBitsPerSample { get; set; }
+
+        /// <summary>
+        /// Whether a short radio-style noise/click burst is automatically added
+        /// at the start and end of every generated sample for this project.
+        /// Null for projects saved before this setting became project-specific.
+        /// </summary>
+        public bool? SquelchEnabled { get; set; }
+
+        /// <summary>
+        /// Duration (in milliseconds) of the noise/click burst for this project.
+        /// Null for projects saved before this setting became project-specific.
+        /// </summary>
+        public int? SquelchDurationMs { get; set; }
+
+        /// <summary>
+        /// Volume (0.0 - 1.0) of the noise/click burst for this project.
+        /// Null for projects saved before this setting became project-specific.
+        /// </summary>
+        public double? SquelchVolume { get; set; }
+
+        /// <summary>
+        /// The default Google Cloud TTS voice name used for every message in
+        /// this project that doesn't have an explicit voice selected. Null
+        /// for projects saved before this setting became project-specific,
+        /// in which case the global default applies.
+        /// </summary>
+        public string? DefaultGoogleVoiceName { get; set; }
     }
 
     /// <summary>
