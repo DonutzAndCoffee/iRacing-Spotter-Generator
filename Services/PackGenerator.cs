@@ -169,7 +169,8 @@ namespace iRacing_Spotter_Generator.Services
                         if (options.SquelchEnabled)
                         {
                             SquelchEffectGenerator.ApplySquelch(
-                                message.RecordedTakePath, wavPath, options.SquelchDurationMs, options.SquelchVolume);
+                                message.RecordedTakePath, wavPath, options.SquelchDurationMs, options.SquelchVolume,
+                                message.AddSquelchStart, message.AddSquelchEnd);
                         }
                         else
                         {
@@ -210,7 +211,8 @@ namespace iRacing_Spotter_Generator.Services
                             if (options.SquelchEnabled)
                             {
                                 SquelchEffectGenerator.ApplySquelch(
-                                    convertedWavPath, wavPath, options.SquelchDurationMs, options.SquelchVolume);
+                                    convertedWavPath, wavPath, options.SquelchDurationMs, options.SquelchVolume,
+                                    message.AddSquelchStart, message.AddSquelchEnd);
                             }
                             else
                             {
@@ -324,6 +326,8 @@ namespace iRacing_Spotter_Generator.Services
             sb.Append(options.SquelchEnabled).Append('|');
             sb.Append(options.SquelchDurationMs).Append('|');
             sb.Append(options.SquelchVolume).Append('|');
+            sb.Append(message.AddSquelchStart).Append('|');
+            sb.Append(message.AddSquelchEnd).Append('|');
 
             var bytes = Encoding.UTF8.GetBytes(sb.ToString());
             var hashBytes = SHA256.HashData(bytes);

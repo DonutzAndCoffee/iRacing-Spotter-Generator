@@ -17,6 +17,8 @@ namespace iRacing_Spotter_Generator.Models
         private string? _recordedTakePath;
         private RowStatus _status = RowStatus.ToDo;
         private bool _isExported;
+        private bool _addSquelchStart = true;
+        private bool _addSquelchEnd = true;
 
         /// <summary>
         /// Stable identifier for this row, used to keep a persistent per-row
@@ -96,6 +98,28 @@ namespace iRacing_Spotter_Generator.Models
         {
             get => _isExported;
             set => SetField(ref _isExported, value);
+        }
+
+        /// <summary>
+        /// Whether to add a squelch signal at the start of this message's audio.
+        /// Defaults to true for backward compatibility.
+        /// </summary>
+        public bool AddSquelchStart
+        {
+            get => _addSquelchStart;
+            set => SetField(ref _addSquelchStart, value);
+        }
+
+        /// <summary>
+        /// Whether to add a squelch signal at the end of this message's audio.
+        /// When multiple messages are combined, only the final one(s) should have
+        /// this enabled to avoid squelch interruptions between concatenated audio.
+        /// Defaults to true for backward compatibility.
+        /// </summary>
+        public bool AddSquelchEnd
+        {
+            get => _addSquelchEnd;
+            set => SetField(ref _addSquelchEnd, value);
         }
 
         /// <summary>

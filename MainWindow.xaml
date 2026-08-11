@@ -155,18 +155,80 @@
                 </Style>
             </DataGrid.RowStyle>
             <DataGrid.Columns>
-                <DataGridCheckBoxColumn Header="{DynamicResource Str_ColumnOn}" Binding="{Binding Enabled, UpdateSourceTrigger=PropertyChanged}" Width="40"/>
-                <DataGridTextColumn Header="{DynamicResource Str_ColumnMessageId}" Binding="{Binding MsgId}" IsReadOnly="True" Width="200"/>
-                <DataGridTextColumn Header="{DynamicResource Str_ColumnWavFile}" Binding="{Binding WavFileName}" IsReadOnly="True" Width="150"/>
-                <DataGridCheckBoxColumn Header="{DynamicResource Str_ColumnExported}" Binding="{Binding IsExported}" IsReadOnly="True" Width="90"/>
-                <DataGridComboBoxColumn Header="{DynamicResource Str_ColumnStatus}" Width="110"
+                <DataGridCheckBoxColumn Width="40">
+                    <DataGridCheckBoxColumn.Header>
+                        <TextBlock Text="{DynamicResource Str_ColumnOn}" ToolTip="{DynamicResource Str_ColumnOnTooltip}"/>
+                    </DataGridCheckBoxColumn.Header>
+                    <DataGridCheckBoxColumn.Binding>
+                        <Binding Path="Enabled" UpdateSourceTrigger="PropertyChanged"/>
+                    </DataGridCheckBoxColumn.Binding>
+                </DataGridCheckBoxColumn>
+                <DataGridTextColumn IsReadOnly="True" Width="200">
+                    <DataGridTextColumn.Header>
+                        <TextBlock Text="{DynamicResource Str_ColumnMessageId}" ToolTip="{DynamicResource Str_ColumnMessageIdTooltip}"/>
+                    </DataGridTextColumn.Header>
+                    <DataGridTextColumn.Binding>
+                        <Binding Path="MsgId"/>
+                    </DataGridTextColumn.Binding>
+                </DataGridTextColumn>
+                <DataGridTextColumn IsReadOnly="True" Width="150">
+                    <DataGridTextColumn.Header>
+                        <TextBlock Text="{DynamicResource Str_ColumnWavFile}" ToolTip="{DynamicResource Str_ColumnWavFileTooltip}"/>
+                    </DataGridTextColumn.Header>
+                    <DataGridTextColumn.Binding>
+                        <Binding Path="WavFileName"/>
+                    </DataGridTextColumn.Binding>
+                </DataGridTextColumn>
+                <DataGridCheckBoxColumn IsReadOnly="True" Width="90">
+                    <DataGridCheckBoxColumn.Header>
+                        <TextBlock Text="{DynamicResource Str_ColumnExported}" ToolTip="{DynamicResource Str_ColumnExportedTooltip}"/>
+                    </DataGridCheckBoxColumn.Header>
+                    <DataGridCheckBoxColumn.Binding>
+                        <Binding Path="IsExported"/>
+                    </DataGridCheckBoxColumn.Binding>
+                </DataGridCheckBoxColumn>
+                <DataGridComboBoxColumn Width="110"
                                          ItemsSource="{Binding Source={StaticResource RowStatusValues}}"
-                                         SelectedItemBinding="{Binding Status, UpdateSourceTrigger=PropertyChanged}"/>
-                <DataGridTextColumn Header="{DynamicResource Str_ColumnText}" Binding="{Binding Text, UpdateSourceTrigger=PropertyChanged}" Width="*"/>
-                <DataGridComboBoxColumn Header="{DynamicResource Str_ColumnSource}" Width="110"
+                                         SelectedItemBinding="{Binding Status, UpdateSourceTrigger=PropertyChanged}">
+                    <DataGridComboBoxColumn.Header>
+                        <TextBlock Text="{DynamicResource Str_ColumnStatus}" ToolTip="{DynamicResource Str_ColumnStatusTooltip}"/>
+                    </DataGridComboBoxColumn.Header>
+                </DataGridComboBoxColumn>
+                <DataGridCheckBoxColumn Width="70">
+                    <DataGridCheckBoxColumn.Header>
+                        <TextBlock Text="√Start" ToolTip="{DynamicResource Str_ColumnStartTooltip}"/>
+                    </DataGridCheckBoxColumn.Header>
+                    <DataGridCheckBoxColumn.Binding>
+                        <Binding Path="AddSquelchStart" UpdateSourceTrigger="PropertyChanged"/>
+                    </DataGridCheckBoxColumn.Binding>
+                </DataGridCheckBoxColumn>
+                <DataGridCheckBoxColumn Width="70">
+                    <DataGridCheckBoxColumn.Header>
+                        <TextBlock Text="√End" ToolTip="{DynamicResource Str_ColumnEndTooltip}"/>
+                    </DataGridCheckBoxColumn.Header>
+                    <DataGridCheckBoxColumn.Binding>
+                        <Binding Path="AddSquelchEnd" UpdateSourceTrigger="PropertyChanged"/>
+                    </DataGridCheckBoxColumn.Binding>
+                </DataGridCheckBoxColumn>
+                <DataGridTextColumn Width="*">
+                    <DataGridTextColumn.Header>
+                        <TextBlock Text="{DynamicResource Str_ColumnText}" ToolTip="{DynamicResource Str_ColumnTextTooltip}"/>
+                    </DataGridTextColumn.Header>
+                    <DataGridTextColumn.Binding>
+                        <Binding Path="Text" UpdateSourceTrigger="PropertyChanged"/>
+                    </DataGridTextColumn.Binding>
+                </DataGridTextColumn>
+                <DataGridComboBoxColumn Width="110"
                                          ItemsSource="{Binding Source={StaticResource SourceTypeValues}}"
-                                         SelectedItemBinding="{Binding SourceType, UpdateSourceTrigger=PropertyChanged}"/>
-                <DataGridTemplateColumn Header="{DynamicResource Str_ColumnAiVoice}" Width="180">
+                                         SelectedItemBinding="{Binding SourceType, UpdateSourceTrigger=PropertyChanged}">
+                    <DataGridComboBoxColumn.Header>
+                        <TextBlock Text="{DynamicResource Str_ColumnSource}" ToolTip="{DynamicResource Str_ColumnSourceTooltip}"/>
+                    </DataGridComboBoxColumn.Header>
+                </DataGridComboBoxColumn>
+                <DataGridTemplateColumn Width="180">
+                    <DataGridTemplateColumn.Header>
+                        <TextBlock Text="{DynamicResource Str_ColumnAiVoice}" ToolTip="{DynamicResource Str_ColumnAiVoiceTooltip}"/>
+                    </DataGridTemplateColumn.Header>
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <ComboBox ItemsSource="{Binding ElementName=WindowRoot, Path=GoogleVoices}"
@@ -177,21 +239,30 @@
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
-                <DataGridTemplateColumn Header="{DynamicResource Str_ColumnPreview}" Width="70">
+                <DataGridTemplateColumn Width="70">
+                    <DataGridTemplateColumn.Header>
+                        <TextBlock Text="{DynamicResource Str_ColumnPreview}" ToolTip="{DynamicResource Str_ColumnPreviewTooltip}"/>
+                    </DataGridTemplateColumn.Header>
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <Button Content="▶" Padding="4,0" Click="PreviewButton_Click"/>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
-                <DataGridTemplateColumn Header="{DynamicResource Str_ColumnRecording}" Width="100">
+                <DataGridTemplateColumn Width="100">
+                    <DataGridTemplateColumn.Header>
+                        <TextBlock Text="{DynamicResource Str_ColumnRecording}" ToolTip="{DynamicResource Str_ColumnRecordingTooltip}"/>
+                    </DataGridTemplateColumn.Header>
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <Button Content="{DynamicResource Str_TakesButton}" Padding="4,0" Click="RecordButton_Click"/>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
-                <DataGridTemplateColumn Header="" Width="90">
+                <DataGridTemplateColumn Width="90">
+                    <DataGridTemplateColumn.Header>
+                        <TextBlock Text="" ToolTip="{DynamicResource Str_ColumnRemoveTooltip}"/>
+                    </DataGridTemplateColumn.Header>
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <Button Content="{DynamicResource Str_Remove}" Padding="4,0" Click="RemoveMessageButton_Click"/>

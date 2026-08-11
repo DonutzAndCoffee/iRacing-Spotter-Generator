@@ -47,6 +47,19 @@
     <sys:String x:Key="Str_ColumnPreview">Preview</sys:String>
     <sys:String x:Key="Str_ColumnRecording">Recording</sys:String>
     <sys:String x:Key="Str_TakesButton">🎙 Takes...</sys:String>
+    <sys:String x:Key="Str_ColumnOnTooltip">Enable/disable this message</sys:String>
+    <sys:String x:Key="Str_ColumnMessageIdTooltip">Unique identifier for the message</sys:String>
+    <sys:String x:Key="Str_ColumnWavFileTooltip">Name of the generated WAV file</sys:String>
+    <sys:String x:Key="Str_ColumnExportedTooltip">Whether the message has been exported to the pack</sys:String>
+    <sys:String x:Key="Str_ColumnStatusTooltip">Track your review progress for this message: ToDo, Satisfactory, Rework Needed, or Done</sys:String>
+    <sys:String x:Key="Str_ColumnStartTooltip">Add squelch effect at the start of the message</sys:String>
+    <sys:String x:Key="Str_ColumnEndTooltip">Add squelch effect at the end of the message</sys:String>
+    <sys:String x:Key="Str_ColumnTextTooltip">The message text to be spoken</sys:String>
+    <sys:String x:Key="Str_ColumnSourceTooltip">Source of the audio (e.g., Google AI, Recording)</sys:String>
+    <sys:String x:Key="Str_ColumnAiVoiceTooltip">Select the AI voice for Google TTS</sys:String>
+    <sys:String x:Key="Str_ColumnPreviewTooltip">Preview the message audio</sys:String>
+    <sys:String x:Key="Str_ColumnRecordingTooltip">Record custom audio for this message</sys:String>
+    <sys:String x:Key="Str_ColumnRemoveTooltip">Remove this message</sys:String>
 
     <!-- Output options -->
     <sys:String x:Key="Str_PackNameLabel">Pack name:</sys:String>

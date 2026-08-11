@@ -47,6 +47,19 @@
     <sys:String x:Key="Str_ColumnPreview">Vorschau</sys:String>
     <sys:String x:Key="Str_ColumnRecording">Aufnahme</sys:String>
     <sys:String x:Key="Str_TakesButton">🎙 Takes...</sys:String>
+    <sys:String x:Key="Str_ColumnOnTooltip">Nachricht aktivieren/deaktivieren</sys:String>
+    <sys:String x:Key="Str_ColumnMessageIdTooltip">Eindeutige Kennung der Nachricht</sys:String>
+    <sys:String x:Key="Str_ColumnWavFileTooltip">Name der generierten Wav-Datei</sys:String>
+    <sys:String x:Key="Str_ColumnExportedTooltip">Gibt an, ob die Nachricht bereits in das Pack exportiert wurde</sys:String>
+    <sys:String x:Key="Str_ColumnStatusTooltip">Verfolge deinen Bearbeitungsfortschritt für diese Nachricht: Zu erledigen, Zufriedenstellend, Überarbeitung nötig oder Fertig</sys:String>
+    <sys:String x:Key="Str_ColumnStartTooltip">Funkrauschen am Anfang der Nachricht hinzufügen</sys:String>
+    <sys:String x:Key="Str_ColumnEndTooltip">Funkrauschen am Ende der Nachricht hinzufügen</sys:String>
+    <sys:String x:Key="Str_ColumnTextTooltip">Der zu sprechende Nachrichtentext</sys:String>
+    <sys:String x:Key="Str_ColumnSourceTooltip">Quelle des Audios (z. B. Google KI, Aufnahme)</sys:String>
+    <sys:String x:Key="Str_ColumnAiVoiceTooltip">Wähle die KI-Stimme für Google TTS</sys:String>
+    <sys:String x:Key="Str_ColumnPreviewTooltip">Audiovorschau der Nachricht abspielen</sys:String>
+    <sys:String x:Key="Str_ColumnRecordingTooltip">Eigene Aufnahme für diese Nachricht erstellen</sys:String>
+    <sys:String x:Key="Str_ColumnRemoveTooltip">Diese Nachricht entfernen</sys:String>
 
     <!-- Output options -->
     <sys:String x:Key="Str_PackNameLabel">Pack-Name:</sys:String>

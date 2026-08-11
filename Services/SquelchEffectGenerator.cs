@@ -11,21 +11,33 @@ namespace iRacing_Spotter_Generator.Services
     public static class SquelchEffectGenerator
     {
         /// <summary>
-        /// Wraps the WAV file at <paramref name="sourcePath"/> with a short noise/click
-        /// burst at the start and end, writing the result to <paramref name="destinationPath"/>.
+        /// Wraps the WAV file at <paramref name="sourcePath"/> with optional squelch signals
+        /// at the start and/or end, writing the result to <paramref name="destinationPath"/>.
         /// The source file's own format (sample rate / bits / channels) is preserved.
         /// </summary>
+        /// <param name="sourcePath">Path to the input WAV file.</param>
+        /// <param name="destinationPath">Path where the output WAV file will be written.</param>
+        /// <param name="durationMs">Duration of each squelch burst in milliseconds.</param>
+        /// <param name="volume">Volume of the squelch effect (0.0 to 1.0).</param>
+        /// <param name="addStart">Whether to add squelch at the start. Defaults to true.</param>
+        /// <param name="addEnd">Whether to add squelch at the end. Defaults to true.</param>
         public static void ApplySquelch(
-            string sourcePath, string destinationPath, int durationMs, double volume)
+            string sourcePath, string destinationPath, int durationMs, double volume,
+            bool addStart = true, bool addEnd = true)
         {
             using var reader = new WaveFileReader(sourcePath);
             var format = reader.WaveFormat;
 
-            var burst = GenerateNoiseBurst(format, durationMs, volume);
+            var burst = addStart || addEnd 
+                ? GenerateNoiseBurst(format, durationMs, volume) 
+                : Array.Empty<byte>();
 
             using var writer = new WaveFileWriter(destinationPath, format);
 
-            writer.Write(burst, 0, burst.Length);
+            if (addStart)
+            {
+                writer.Write(burst, 0, burst.Length);
+            }
 
             var buffer = new byte[format.AverageBytesPerSecond];
             int bytesRead;
@@ -34,7 +46,10 @@ namespace iRacing_Spotter_Generator.Services
                 writer.Write(buffer, 0, bytesRead);
             }
 
-            writer.Write(burst, 0, burst.Length);
+            if (addEnd)
+            {
+                writer.Write(burst, 0, burst.Length);
+            }
         }
 
         private static byte[] GenerateNoiseBurst(WaveFormat format, int durationMs, double volume)
