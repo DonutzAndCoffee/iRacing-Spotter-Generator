@@ -119,8 +119,13 @@ namespace iRacing_Spotter_Generator
 
             // Use a stable, per-row folder (keyed by the message's own id)
             // instead of a random folder each time, so takes recorded across
-            // multiple TakesWindow sessions are not orphaned/lost.
-            _tempFolder = Path.Combine(Path.GetTempPath(), "iRacingSpotterTakes", storageKey);
+            // multiple TakesWindow sessions are not orphaned/lost. Stored under
+            // %AppData% (like AppSettingsService) rather than the OS temp
+            // folder, since temp files can be cleaned up at any time and would
+            // silently delete recorded takes.
+            _tempFolder = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                "iRacingSpotterGenerator", "Takes", storageKey);
             Directory.CreateDirectory(_tempFolder);
 
             Closed += (_, _) => StopTrimPlayback();
