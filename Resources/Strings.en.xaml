@@ -1,0 +1,95 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="clr-namespace:System;assembly=mscorlib">
+
+    <!-- Toolbar -->
+    <sys:String x:Key="Str_Filter">Filter:</sys:String>
+    <sys:String x:Key="Str_LoadGoogleVoices">Load Google Voices</sys:String>
+    <sys:String x:Key="Str_Settings">Settings</sys:String>
+    <sys:String x:Key="Str_AddMessage">+ Add Message</sys:String>
+    <sys:String x:Key="Str_NewProject">New Project</sys:String>
+    <sys:String x:Key="Str_SaveProject">Save Project</sys:String>
+    <sys:String x:Key="Str_OpenProject">Open Project</sys:String>
+    <sys:String x:Key="Str_Language">Language:</sys:String>
+
+    <!-- Inline settings panel -->
+    <sys:String x:Key="Str_GoogleApiKeyHeader">Google Cloud Text-to-Speech API Key</sys:String>
+    <sys:String x:Key="Str_GoogleApiKeyHint">Create an API key in the Google Cloud Console (the Text-to-Speech API must be enabled). The key is stored locally in %AppData%\iRacingSpotterGenerator\settings.json (unencrypted).</sys:String>
+    <sys:String x:Key="Str_LinkCreateApiKey">Create API Key</sys:String>
+    <sys:String x:Key="Str_LinkEnableTts">Enable Text-to-Speech API</sys:String>
+    <sys:String x:Key="Str_LinkEnableTranslate">Enable Translation API</sys:String>
+    <sys:String x:Key="Str_DefaultVoiceHeader">Default AI Voice (Google)</sys:String>
+    <sys:String x:Key="Str_RecordingQualityHeader">Recording Quality (own recordings)</sys:String>
+    <sys:String x:Key="Str_SampleRateLabel">Sample Rate (Hz):</sys:String>
+    <sys:String x:Key="Str_BitsPerSampleLabel">Bits/Sample:</sys:String>
+    <sys:String x:Key="Str_RecordingQualityHint">iRacing itself plays spotter callouts at 5512 Hz / 8-bit (the classic radio sound). Higher values sound cleaner, but iRacing downsamples them to this format anyway.</sys:String>
+    <sys:String x:Key="Str_SquelchHeader">Radio Squelch (Noise/Click)</sys:String>
+    <sys:String x:Key="Str_SquelchAutoAdd">Add automatically</sys:String>
+    <sys:String x:Key="Str_SquelchDurationLabel">Duration (ms):</sys:String>
+    <sys:String x:Key="Str_SquelchVolumeLabel">Volume (0-1):</sys:String>
+    <sys:String x:Key="Str_SquelchHint">Adds a short noise/click burst at the start and end of every generated file, like a typical radio squelch tail.</sys:String>
+    <sys:String x:Key="Str_SaveSettings">Save Settings</sys:String>
+
+    <!-- Message grid -->
+    <sys:String x:Key="Str_Duplicate">Duplicate</sys:String>
+    <sys:String x:Key="Str_Remove">Remove</sys:String>
+    <sys:String x:Key="Str_ProposeTranslationRow">Propose Translation...</sys:String>
+    <sys:String x:Key="Str_ProposeTranslationSelected">Propose Translation for Selection...</sys:String>
+    <sys:String x:Key="Str_TranslateAll">Translate All...</sys:String>
+    <sys:String x:Key="Str_ColumnOn">On</sys:String>
+    <sys:String x:Key="Str_ColumnMessageId">Message ID</sys:String>
+    <sys:String x:Key="Str_ColumnWavFile">Wav File</sys:String>
+    <sys:String x:Key="Str_ColumnText">Text</sys:String>
+    <sys:String x:Key="Str_ColumnSource">Source</sys:String>
+    <sys:String x:Key="Str_ColumnAiVoice">AI Voice</sys:String>
+    <sys:String x:Key="Str_ColumnPreview">Preview</sys:String>
+    <sys:String x:Key="Str_ColumnRecording">Recording</sys:String>
+    <sys:String x:Key="Str_TakesButton">🎙 Takes...</sys:String>
+
+    <!-- Output options -->
+    <sys:String x:Key="Str_PackNameLabel">Pack name:</sys:String>
+    <sys:String x:Key="Str_DestinationFolderLabel">Destination folder:</sys:String>
+    <sys:String x:Key="Str_Browse">Browse...</sys:String>
+
+    <!-- Generate -->
+    <sys:String x:Key="Str_GeneratePack">Generate Pack</sys:String>
+    <sys:String x:Key="Str_OnlyChangedSounds">Only export new/changed sounds</sys:String>
+    <sys:String x:Key="Str_PendingSoundsHeader">Show sounds to be exported</sys:String>
+
+    <!-- Code-behind: status / messages -->
+    <sys:String x:Key="Str_NoGoogleApiKey">No Google API key configured. Configure one under 'Settings' to use AI voices.</sys:String>
+    <sys:String x:Key="Str_NoGoogleApiKeyShort">No Google API key configured.</sys:String>
+    <sys:String x:Key="Str_LoadingGoogleVoices">Loading Google voices...</sys:String>
+    <sys:String x:Key="Str_GoogleVoicesLoaded">Google AI voices loaded.</sys:String>
+    <sys:String x:Key="Str_GoogleVoicesLoadFailed">Could not load Google voices:</sys:String>
+    <sys:String x:Key="Str_TemplateNotFound">Template file not found:</sys:String>
+    <sys:String x:Key="Str_AppTitle">iRacing Spotter Pack Generator</sys:String>
+    <sys:String x:Key="Str_UnsavedChangesMessage">There are unsaved changes. Would you like to save them first?</sys:String>
+    <sys:String x:Key="Str_UnsavedChangesTitle">Unsaved Changes</sys:String>
+    <sys:String x:Key="Str_NewProjectStarted">New project started.</sys:String>
+    <sys:String x:Key="Str_RemoveConfirm">really remove?</sys:String>
+    <sys:String x:Key="Str_RemoveTitle">Remove Message</sys:String>
+    <sys:String x:Key="Str_LastMsgIdCannotBeDeleted">is the only entry for this MsgId and cannot be deleted.</sys:String>
+    <sys:String x:Key="Str_LastMsgIdCannotBeDeletedHint">Every MsgId must be present at least once. Disable the 'On' checkbox instead to deactivate the voice message in iRacing (NULL).</sys:String>
+    <sys:String x:Key="Str_CannotRemoveTitle">Message Cannot Be Removed</sys:String>
+    <sys:String x:Key="Str_NoTakeRecorded">No take has been recorded for this row yet.</sys:String>
+    <sys:String x:Key="Str_PreviewTitle">Preview</sys:String>
+    <sys:String x:Key="Str_NoGoogleApiKeyForPreview">Please configure a Google API key under 'Settings' first.</sys:String>
+    <sys:String x:Key="Str_NoGoogleVoiceForPreview">Please select a Google AI voice for this row or set a default voice in the settings.</sys:String>
+    <sys:String x:Key="Str_GooglePreviewFailed">Google preview failed:</sys:String>
+    <sys:String x:Key="Str_ProjectSaved">Project saved:</sys:String>
+    <sys:String x:Key="Str_ProjectSaveFailed">Project could not be saved:</sys:String>
+    <sys:String x:Key="Str_SaveProjectTitle">Save Project</sys:String>
+    <sys:String x:Key="Str_ProjectLoaded">Project loaded:</sys:String>
+    <sys:String x:Key="Str_ProjectLoadFailed">Project could not be loaded:</sys:String>
+    <sys:String x:Key="Str_OpenProjectTitle">Open Project</sys:String>
+    <sys:String x:Key="Str_ChooseDestinationFirst">Please choose a destination folder first.</sys:String>
+    <sys:String x:Key="Str_Generating">Generating...</sys:String>
+    <sys:String x:Key="Str_Done">Done!</sys:String>
+    <sys:String x:Key="Str_PackGeneratedSuccess">Spotter pack generated successfully at:</sys:String>
+    <sys:String x:Key="Str_Failed">Failed.</sys:String>
+    <sys:String x:Key="Str_NoGoogleApiKeyForTranslation">Please configure a Google API key under 'Settings' first (the Cloud Translation API must be enabled).</sys:String>
+    <sys:String x:Key="Str_TranslationFailed">Translation failed:</sys:String>
+    <sys:String x:Key="Str_PackGenerationFailed">Pack generation failed:</sys:String>
+
+</ResourceDictionary>

@@ -1,0 +1,44 @@
+<Window x:Class="iRacing_Spotter_Generator.TranslationProposalWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        mc:Ignorable="d"
+        Title="Übersetzung vorschlagen" Height="560" Width="820"
+        WindowStartupLocation="CenterOwner">
+    <Grid Margin="15">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock x:Name="HeaderTextBlock" Grid.Row="0" FontWeight="Bold" Margin="0,0,0,5" TextWrapping="Wrap"/>
+        <TextBox x:Name="StatusTextBlock" Grid.Row="1" Foreground="Gray" Margin="0,0,0,10"
+                 IsReadOnly="True" BorderThickness="0" Background="Transparent"
+                 TextWrapping="Wrap" MaxHeight="120" VerticalScrollBarVisibility="Auto"
+                 IsReadOnlyCaretVisible="True"/>
+        <TextBlock x:Name="ErrorLinkTextBlock" Grid.Row="2" Margin="0,0,0,10" Visibility="Collapsed">
+            <Hyperlink x:Name="ErrorLinkHyperlink" RequestNavigate="ErrorLinkHyperlink_RequestNavigate">
+                <Run Text="Google Cloud Console öffnen, um die API zu aktivieren"/>
+            </Hyperlink>
+        </TextBlock>
+
+        <DataGrid x:Name="ProposalsDataGrid" Grid.Row="3" AutoGenerateColumns="False"
+                  CanUserAddRows="False" CanUserDeleteRows="False" ItemsSource="{Binding}">
+            <DataGrid.Columns>
+                <DataGridCheckBoxColumn Header="Übernehmen" Binding="{Binding Accepted, UpdateSourceTrigger=PropertyChanged}" Width="90"/>
+                <DataGridTextColumn Header="Message ID" Binding="{Binding MsgId}" IsReadOnly="True" Width="160"/>
+                <DataGridTextColumn Header="Original" Binding="{Binding OriginalText}" IsReadOnly="True" Width="*"/>
+                <DataGridTextColumn Header="Vorschlag" Binding="{Binding ProposedText, UpdateSourceTrigger=PropertyChanged}" Width="*"/>
+            </DataGrid.Columns>
+        </DataGrid>
+
+        <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10,0,0">
+            <Button Content="Übernehmen" Width="110" Margin="0,0,10,0" Click="ApplyButton_Click" IsDefault="True"/>
+            <Button Content="Abbrechen" Width="90" Click="CancelButton_Click" IsCancel="True"/>
+        </StackPanel>
+    </Grid>
+</Window>

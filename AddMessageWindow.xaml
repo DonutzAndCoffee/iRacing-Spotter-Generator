@@ -1,0 +1,34 @@
+<Window x:Class="iRacing_Spotter_Generator.AddMessageWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        mc:Ignorable="d"
+        Title="Neue Nachricht hinzufügen" Height="260" Width="480"
+        WindowStartupLocation="CenterOwner" ResizeMode="NoResize">
+    <Grid Margin="15">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" Text="Message ID" FontWeight="Bold" Margin="0,0,0,5"/>
+        <ComboBox x:Name="MsgIdComboBox" Grid.Row="1" IsEditable="True" Margin="0,0,0,5"/>
+        <TextBlock Grid.Row="2" Foreground="Gray" TextWrapping="Wrap"
+                   Text="Wähle eine bekannte Message-ID aus der Liste (aus dem iRacing-Template) oder gib eine eigene ein, um eine weitere Sprachvariante für diese ID hinzuzufügen."
+                   Margin="0,0,0,10"/>
+
+        <TextBlock Grid.Row="3" Text="Text" FontWeight="Bold" Margin="0,0,0,5"/>
+        <TextBox x:Name="TextTextBox" Grid.Row="4" Height="26" Margin="0,0,0,10"/>
+
+        <StackPanel Grid.Row="6" Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button Content="Hinzufügen" Width="90" Margin="0,0,10,0" Click="AddButton_Click" IsDefault="True"/>
+            <Button Content="Abbrechen" Width="90" Click="CancelButton_Click" IsCancel="True"/>
+        </StackPanel>
+    </Grid>
+</Window>
