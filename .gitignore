@@ -371,3 +371,4 @@ FodyWeavers.xsd
 /iRacing Spotter Generator-cache/
 /iRacing Spotter Generator-SetupFiles/
 *.csproj.Backup.tmp
+/iRacing Spotter Generator.aip
