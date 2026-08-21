@@ -6,11 +6,19 @@
     <sys:String x:Key="Str_Filter">Filter:</sys:String>
     <sys:String x:Key="Str_LoadGoogleVoices">Google-Stimmen laden</sys:String>
     <sys:String x:Key="Str_Settings">Einstellungen</sys:String>
+    <sys:String x:Key="Str_SettingsToggleTooltip">Einstellungsbereich ein-/ausblenden</sys:String>
     <sys:String x:Key="Str_AddMessage">+ Nachricht hinzufügen</sys:String>
     <sys:String x:Key="Str_NewProject">Neues Projekt</sys:String>
     <sys:String x:Key="Str_SaveProject">Projekt speichern</sys:String>
     <sys:String x:Key="Str_OpenProject">Projekt öffnen</sys:String>
     <sys:String x:Key="Str_Language">Sprache:</sys:String>
+    <sys:String x:Key="Str_License">Lizenz</sys:String>
+    <sys:String x:Key="Str_LicenseTitle">DonutzSpotterGenerator – Lizenzvereinbarung</sys:String>
+    <sys:String x:Key="Str_LicenseIntro">This software is provided free of charge for use by the iRacing community.</sys:String>
+    <sys:String x:Key="Str_LicenseDisclaimer">Disclaimer: This tool is an independent, unofficial utility and is not affiliated with, endorsed by, or sponsored by iRacing.com Motorsport Simulations, LLC. "iRacing" and related trademarks are the property of their respective owners.</sys:String>
+    <sys:String x:Key="Str_LicenseNoWarranty">No Warranty: This software is provided "as is," without warranty of any kind, express or implied. The author assumes no liability for any damages, data loss, or issues arising from the use of this tool.</sys:String>
+    <sys:String x:Key="Str_LicenseUsage">Usage: You are free to use this software for personal, non-commercial purposes. Redistribution of the compiled application is permitted, provided this notice remains intact. Modification or redistribution of the source code requires the author's permission.</sys:String>
+    <sys:String x:Key="Str_LicenseGeneratedContent">Generated Content: Voice packs created using this tool (including any AI-generated audio) are the responsibility of the user. Ensure any third-party voice generation services used comply with their own terms of service.</sys:String>
 
     <!-- Inline settings panel -->
     <sys:String x:Key="Str_GoogleApiKeyHeader">Google Cloud Text-to-Speech API Key</sys:String>
@@ -22,12 +30,21 @@
     <sys:String x:Key="Str_RecordingQualityHeader">Aufnahmequalität (eigene Aufnahmen)</sys:String>
     <sys:String x:Key="Str_SampleRateLabel">Sample-Rate (Hz):</sys:String>
     <sys:String x:Key="Str_BitsPerSampleLabel">Bits/Sample:</sys:String>
-    <sys:String x:Key="Str_RecordingQualityHint">iRacing selbst spielt Spotter-Ansagen mit 5512 Hz / 8 Bit ab (klingt wie Boxenfunk). Höhere Werte klingen sauberer, werden von iRacing aber ohnehin auf dieses Format heruntergerechnet.</sys:String>
+    <sys:String x:Key="Str_RecordingQualityHint">iRacing selbst spielt Spotter-Ansagen mit 5512 Hz / 8 Bit ab (klingt wie Boxenfunk). iRacing verändert die Qualität deiner Dateien nicht, wähle also das Format, das der finale Sound haben soll.</sys:String>
     <sys:String x:Key="Str_SquelchHeader">Funkgeräusch (Rauschen/Knacken)</sys:String>
     <sys:String x:Key="Str_SquelchAutoAdd">Automatisch hinzufügen</sys:String>
     <sys:String x:Key="Str_SquelchDurationLabel">Dauer (ms):</sys:String>
     <sys:String x:Key="Str_SquelchVolumeLabel">Lautstärke (0-1):</sys:String>
     <sys:String x:Key="Str_SquelchHint">Fügt am Anfang und Ende jeder generierten Datei ein kurzes Rausch-/Klickgeräusch hinzu, wie es typisch für Boxenfunk ist.</sys:String>
+    <sys:String x:Key="Str_RadioEffectHeader">Funkgerät-Effekt (Bandpass/Verzerrung)</sys:String>
+    <sys:String x:Key="Str_RadioEffectAutoAdd">Automatisch anwenden</sys:String>
+    <sys:String x:Key="Str_RadioEffectLowCutLabel">Untere Grenze (Hz):</sys:String>
+    <sys:String x:Key="Str_RadioEffectHighCutLabel">Obere Grenze (Hz):</sys:String>
+    <sys:String x:Key="Str_RadioEffectDistortionLabel">Verzerrung (0-1):</sys:String>
+    <sys:String x:Key="Str_RadioEffectHint">Wendet einen Bandpass-Filter (schneidet Frequenzen außerhalb des gewählten Bereichs ab) sowie optional eine leichte Verzerrung/Clipping auf jede generierte Datei an, für den typischen schmalbandigen, leicht übersteuerten "Funkgerät"-Klang.</sys:String>
+    <sys:String x:Key="Str_OutputVolumeHeader">Lautstärke</sys:String>
+    <sys:String x:Key="Str_OutputVolumeLabel">Lautstärke (1.0 = unverändert):</sys:String>
+    <sys:String x:Key="Str_OutputVolumeHint">Erhöht oder verringert die Gesamtlautstärke jeder generierten Datei. Erhöhe diesen Wert, wenn die Ansagen in iRacing zu leise klingen (Werte über 1.0 können zu leichtem Clipping führen).</sys:String>
     <sys:String x:Key="Str_SaveSettings">Einstellungen speichern</sys:String>
 
     <!-- Message grid -->
@@ -43,6 +60,7 @@
     <sys:String x:Key="Str_ColumnStatus">Status</sys:String>
     <sys:String x:Key="Str_ColumnText">Text</sys:String>
     <sys:String x:Key="Str_ColumnSource">Quelle</sys:String>
+    <sys:String x:Key="Str_ColumnRadioEffect">Funkeffekt</sys:String>
     <sys:String x:Key="Str_ColumnAiVoice">KI-Stimme</sys:String>
     <sys:String x:Key="Str_ColumnPreview">Vorschau</sys:String>
     <sys:String x:Key="Str_ColumnRecording">Aufnahme</sys:String>
@@ -56,6 +74,10 @@
     <sys:String x:Key="Str_ColumnEndTooltip">Funkrauschen am Ende der Nachricht hinzufügen</sys:String>
     <sys:String x:Key="Str_ColumnTextTooltip">Der zu sprechende Nachrichtentext</sys:String>
     <sys:String x:Key="Str_ColumnSourceTooltip">Quelle des Audios (z. B. Google KI, Aufnahme)</sys:String>
+    <sys:String x:Key="Str_ColumnRadioEffectTooltip">Funkeffekt auf diese Nachricht anwenden, sofern in den Einstellungen aktiviert</sys:String>
+    <sys:String x:Key="Str_BulkToggleLabel">Für alle Zeilen setzen:</sys:String>
+    <sys:String x:Key="Str_CheckAll">Alle setzen</sys:String>
+    <sys:String x:Key="Str_UncheckAll">Alle entfernen</sys:String>
     <sys:String x:Key="Str_ColumnAiVoiceTooltip">Wähle die KI-Stimme für Google TTS</sys:String>
     <sys:String x:Key="Str_ColumnPreviewTooltip">Audiovorschau der Nachricht abspielen</sys:String>
     <sys:String x:Key="Str_ColumnRecordingTooltip">Eigene Aufnahme für diese Nachricht erstellen</sys:String>
@@ -101,6 +123,41 @@
     <sys:String x:Key="Str_ChooseDestinationFirst">Bitte zuerst einen Zielordner auswählen.</sys:String>
     <sys:String x:Key="Str_Generating">Generiere...</sys:String>
     <sys:String x:Key="Str_Done">Fertig!</sys:String>
+    <sys:String x:Key="Str_ImportPack">Paket importieren</sys:String>
+    <sys:String x:Key="Str_ImportPackTitle">Spotter-Paket importieren</sys:String>
+    <sys:String x:Key="Str_ImportPackNoSpmsg">Im gewählten Ordner wurde keine spmsg.ini gefunden.</sys:String>
+    <sys:String x:Key="Str_ImportPackFailed">Paket konnte nicht importiert werden:</sys:String>
+    <sys:String x:Key="Str_PackImported">Paket importiert, übernommene Nachrichten:</sys:String>
+
+    <!-- TakesWindow -->
+    <sys:String x:Key="Str_TakesWindowTitle">Aufnahme</sys:String>
+    <sys:String x:Key="Str_StartRecording">● Aufnahme starten</sys:String>
+    <sys:String x:Key="Str_StopRecording">■ Aufnahme stoppen</sys:String>
+    <sys:String x:Key="Str_ImportWavFiles">Wav-Datei(en) importieren</sys:String>
+    <sys:String x:Key="Str_RecordingInProgress">Aufnahme läuft...</sys:String>
+    <sys:String x:Key="Str_RecordingQualityInfo">Aufnahme in hoher Qualität, Export in Zielqualität: {0} Hz / {1} Bit (wie iRacing)</sys:String>
+    <sys:String x:Key="Str_RecordedTakes">Aufgenommene Takes:</sys:String>
+    <sys:String x:Key="Str_Rating">Wertung:</sys:String>
+    <sys:String x:Key="Str_TrimToolTitle">Schnitt-Tool (Start/Ende festlegen)</sys:String>
+    <sys:String x:Key="Str_TrimStart">Start (Sek.):</sys:String>
+    <sys:String x:Key="Str_TrimEnd">Ende (Sek.):</sys:String>
+    <sys:String x:Key="Str_PlayTrimSegment">▶ Ausschnitt abspielen</sys:String>
+    <sys:String x:Key="Str_PausePlayback">⏸ Pause</sys:String>
+    <sys:String x:Key="Str_ApplyTrim">Zuschneiden &amp; als neuen Take speichern</sys:String>
+    <sys:String x:Key="Str_Play">▶ Abspielen</sys:String>
+    <sys:String x:Key="Str_Delete">Löschen</sys:String>
+    <sys:String x:Key="Str_UseThisTake">Diesen Take verwenden</sys:String>
+    <sys:String x:Key="Str_Cancel">Abbrechen</sys:String>
+    <sys:String x:Key="Str_RecordingStartFailed">Aufnahme konnte nicht gestartet werden: {0}</sys:String>
+    <sys:String x:Key="Str_ImportTakeFailed">'{0}' konnte nicht importiert werden: {1}</sys:String>
+    <sys:String x:Key="Str_PlaybackFailed">Wiedergabe fehlgeschlagen: {0}</sys:String>
+    <sys:String x:Key="Str_FileReadFailed">Datei konnte nicht gelesen werden: {0}</sys:String>
+    <sys:String x:Key="Str_TrimFailed">Zuschneiden fehlgeschlagen: {0}</sys:String>
+    <sys:String x:Key="Str_SelectTakeFirst">Bitte zuerst einen Take auswählen.</sys:String>
+    <sys:String x:Key="Str_SelectOrRecordTakeFirst">Bitte zuerst einen Take auswählen oder aufnehmen.</sys:String>
+    <sys:String x:Key="Str_TrimDurationText">Start: {0:0.00}s, Ende: {1:0.00}s, Länge nach Schnitt: {2:0.00}s</sys:String>
+    <sys:String x:Key="Str_TakeTrimmedSuffix"> (geschnitten)</sys:String>
+    <sys:String x:Key="Str_TakeName">Take {0}</sys:String>
     <sys:String x:Key="Str_PackGeneratedSuccess">Spotter-Pack erfolgreich erstellt unter:</sys:String>
     <sys:String x:Key="Str_Failed">Fehlgeschlagen.</sys:String>
     <sys:String x:Key="Str_NoGoogleApiKeyForTranslation">Bitte zuerst einen Google API-Key unter 'Einstellungen' hinterlegen (Cloud Translation API muss aktiviert sein).</sys:String>

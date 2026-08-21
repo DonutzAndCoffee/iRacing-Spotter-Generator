@@ -192,6 +192,9 @@ publish/
 # in these scripts will be unencrypted
 PublishScripts/
 
+# AI assistant notes / instructions (local only, not synced)
+.github/copilot-instructions.md
+
 # NuGet Packages
 *.nupkg
 # NuGet Symbol Packages
@@ -362,3 +365,9 @@ MigrationBackup/
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
 /TESTS/Olli.spgproj
+
+# Project-specific build/publish/installer artifacts (not needed on GitHub)
+/publish-out/
+/iRacing Spotter Generator-cache/
+/iRacing Spotter Generator-SetupFiles/
+*.csproj.Backup.tmp

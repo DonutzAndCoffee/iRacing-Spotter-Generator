@@ -42,6 +42,37 @@ namespace iRacing_Spotter_Generator.Models
         public double SquelchVolume { get; set; } = 0.5;
 
         /// <summary>
+        /// Whether the flexible radio effect (bandpass filter + optional
+        /// distortion) is automatically applied to every generated sample.
+        /// </summary>
+        public bool RadioEffectEnabled { get; set; } = false;
+
+        /// <summary>
+        /// Low cutoff frequency (Hz) of the radio effect's bandpass filter;
+        /// frequencies below this are attenuated.
+        /// </summary>
+        public int RadioEffectLowCutHz { get; set; } = 300;
+
+        /// <summary>
+        /// High cutoff frequency (Hz) of the radio effect's bandpass filter;
+        /// frequencies above this are attenuated.
+        /// </summary>
+        public int RadioEffectHighCutHz { get; set; } = 3000;
+
+        /// <summary>
+        /// Amount of soft-clip distortion applied by the radio effect
+        /// (0.0 = none, 1.0 = strong).
+        /// </summary>
+        public double RadioEffectDistortion { get; set; } = 0.2;
+
+        /// <summary>
+        /// Output volume/gain applied to every generated sample (1.0 = unchanged,
+        /// &gt;1.0 = louder, &lt;1.0 = quieter). Useful because iRacing plays
+        /// spotter clips comparatively quiet.
+        /// </summary>
+        public double OutputVolume { get; set; } = 1.0;
+
+        /// <summary>
         /// UI language code ("de" or "en"). Defaults to German.
         /// </summary>
         public string Language { get; set; } = "de";

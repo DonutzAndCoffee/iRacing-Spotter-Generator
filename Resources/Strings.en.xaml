@@ -6,11 +6,19 @@
     <sys:String x:Key="Str_Filter">Filter:</sys:String>
     <sys:String x:Key="Str_LoadGoogleVoices">Load Google Voices</sys:String>
     <sys:String x:Key="Str_Settings">Settings</sys:String>
+    <sys:String x:Key="Str_SettingsToggleTooltip">Show/hide settings panel</sys:String>
     <sys:String x:Key="Str_AddMessage">+ Add Message</sys:String>
     <sys:String x:Key="Str_NewProject">New Project</sys:String>
     <sys:String x:Key="Str_SaveProject">Save Project</sys:String>
     <sys:String x:Key="Str_OpenProject">Open Project</sys:String>
     <sys:String x:Key="Str_Language">Language:</sys:String>
+    <sys:String x:Key="Str_License">License</sys:String>
+    <sys:String x:Key="Str_LicenseTitle">DonutzSpotterGenerator – License Agreement</sys:String>
+    <sys:String x:Key="Str_LicenseIntro">This software is provided free of charge for use by the iRacing community.</sys:String>
+    <sys:String x:Key="Str_LicenseDisclaimer">Disclaimer: This tool is an independent, unofficial utility and is not affiliated with, endorsed by, or sponsored by iRacing.com Motorsport Simulations, LLC. "iRacing" and related trademarks are the property of their respective owners.</sys:String>
+    <sys:String x:Key="Str_LicenseNoWarranty">No Warranty: This software is provided "as is," without warranty of any kind, express or implied. The author assumes no liability for any damages, data loss, or issues arising from the use of this tool.</sys:String>
+    <sys:String x:Key="Str_LicenseUsage">Usage: You are free to use this software for personal, non-commercial purposes. Redistribution of the compiled application is permitted, provided this notice remains intact. Modification or redistribution of the source code requires the author's permission.</sys:String>
+    <sys:String x:Key="Str_LicenseGeneratedContent">Generated Content: Voice packs created using this tool (including any AI-generated audio) are the responsibility of the user. Ensure any third-party voice generation services used comply with their own terms of service.</sys:String>
 
     <!-- Inline settings panel -->
     <sys:String x:Key="Str_GoogleApiKeyHeader">Google Cloud Text-to-Speech API Key</sys:String>
@@ -22,12 +30,21 @@
     <sys:String x:Key="Str_RecordingQualityHeader">Recording Quality (own recordings)</sys:String>
     <sys:String x:Key="Str_SampleRateLabel">Sample Rate (Hz):</sys:String>
     <sys:String x:Key="Str_BitsPerSampleLabel">Bits/Sample:</sys:String>
-    <sys:String x:Key="Str_RecordingQualityHint">iRacing itself plays spotter callouts at 5512 Hz / 8-bit (the classic radio sound). Higher values sound cleaner, but iRacing downsamples them to this format anyway.</sys:String>
+    <sys:String x:Key="Str_RecordingQualityHint">iRacing itself plays spotter callouts at 5512 Hz / 8-bit (the classic radio sound). iRacing does not change the quality of your files, so use the format you want the final sound to have.</sys:String>
     <sys:String x:Key="Str_SquelchHeader">Radio Squelch (Noise/Click)</sys:String>
     <sys:String x:Key="Str_SquelchAutoAdd">Add automatically</sys:String>
     <sys:String x:Key="Str_SquelchDurationLabel">Duration (ms):</sys:String>
     <sys:String x:Key="Str_SquelchVolumeLabel">Volume (0-1):</sys:String>
     <sys:String x:Key="Str_SquelchHint">Adds a short noise/click burst at the start and end of every generated file, like a typical radio squelch tail.</sys:String>
+    <sys:String x:Key="Str_RadioEffectHeader">Radio Effect (Bandpass/Distortion)</sys:String>
+    <sys:String x:Key="Str_RadioEffectAutoAdd">Apply automatically</sys:String>
+    <sys:String x:Key="Str_RadioEffectLowCutLabel">Low cut (Hz):</sys:String>
+    <sys:String x:Key="Str_RadioEffectHighCutLabel">High cut (Hz):</sys:String>
+    <sys:String x:Key="Str_RadioEffectDistortionLabel">Distortion (0-1):</sys:String>
+    <sys:String x:Key="Str_RadioEffectHint">Applies a bandpass filter (cuts frequencies outside the chosen range) plus optional soft-clip distortion to every generated file, giving it that typical narrow, slightly overdriven "radio transmission" character.</sys:String>
+    <sys:String x:Key="Str_OutputVolumeHeader">Output Volume</sys:String>
+    <sys:String x:Key="Str_OutputVolumeLabel">Volume (1.0 = unchanged):</sys:String>
+    <sys:String x:Key="Str_OutputVolumeHint">Boosts or reduces the overall volume of every generated file. Increase this if the messages sound too quiet in iRacing (values above 1.0 may introduce slight clipping).</sys:String>
     <sys:String x:Key="Str_SaveSettings">Save Settings</sys:String>
 
     <!-- Message grid -->
@@ -43,6 +60,7 @@
     <sys:String x:Key="Str_ColumnStatus">Status</sys:String>
     <sys:String x:Key="Str_ColumnText">Text</sys:String>
     <sys:String x:Key="Str_ColumnSource">Source</sys:String>
+    <sys:String x:Key="Str_ColumnRadioEffect">Radio Effect</sys:String>
     <sys:String x:Key="Str_ColumnAiVoice">AI Voice</sys:String>
     <sys:String x:Key="Str_ColumnPreview">Preview</sys:String>
     <sys:String x:Key="Str_ColumnRecording">Recording</sys:String>
@@ -56,6 +74,10 @@
     <sys:String x:Key="Str_ColumnEndTooltip">Add squelch effect at the end of the message</sys:String>
     <sys:String x:Key="Str_ColumnTextTooltip">The message text to be spoken</sys:String>
     <sys:String x:Key="Str_ColumnSourceTooltip">Source of the audio (e.g., Google AI, Recording)</sys:String>
+    <sys:String x:Key="Str_ColumnRadioEffectTooltip">Apply the radio effect to this message, if enabled in settings</sys:String>
+    <sys:String x:Key="Str_BulkToggleLabel">Set for all rows:</sys:String>
+    <sys:String x:Key="Str_CheckAll">Check all</sys:String>
+    <sys:String x:Key="Str_UncheckAll">Uncheck all</sys:String>
     <sys:String x:Key="Str_ColumnAiVoiceTooltip">Select the AI voice for Google TTS</sys:String>
     <sys:String x:Key="Str_ColumnPreviewTooltip">Preview the message audio</sys:String>
     <sys:String x:Key="Str_ColumnRecordingTooltip">Record custom audio for this message</sys:String>
@@ -101,6 +123,41 @@
     <sys:String x:Key="Str_ChooseDestinationFirst">Please choose a destination folder first.</sys:String>
     <sys:String x:Key="Str_Generating">Generating...</sys:String>
     <sys:String x:Key="Str_Done">Done!</sys:String>
+    <sys:String x:Key="Str_ImportPack">Import Pack</sys:String>
+    <sys:String x:Key="Str_ImportPackTitle">Import Spotter Pack</sys:String>
+    <sys:String x:Key="Str_ImportPackNoSpmsg">No spmsg.ini file was found in the selected folder.</sys:String>
+    <sys:String x:Key="Str_ImportPackFailed">Pack could not be imported:</sys:String>
+    <sys:String x:Key="Str_PackImported">Pack imported, messages taken over:</sys:String>
+
+    <!-- TakesWindow -->
+    <sys:String x:Key="Str_TakesWindowTitle">Recording</sys:String>
+    <sys:String x:Key="Str_StartRecording">● Start Recording</sys:String>
+    <sys:String x:Key="Str_StopRecording">■ Stop Recording</sys:String>
+    <sys:String x:Key="Str_ImportWavFiles">Import Wav File(s)</sys:String>
+    <sys:String x:Key="Str_RecordingInProgress">Recording in progress...</sys:String>
+    <sys:String x:Key="Str_RecordingQualityInfo">Recording in high quality, export at target quality: {0} Hz / {1} Bit (like iRacing)</sys:String>
+    <sys:String x:Key="Str_RecordedTakes">Recorded Takes:</sys:String>
+    <sys:String x:Key="Str_Rating">Rating:</sys:String>
+    <sys:String x:Key="Str_TrimToolTitle">Trim Tool (set start/end)</sys:String>
+    <sys:String x:Key="Str_TrimStart">Start (sec):</sys:String>
+    <sys:String x:Key="Str_TrimEnd">End (sec):</sys:String>
+    <sys:String x:Key="Str_PlayTrimSegment">▶ Play Segment</sys:String>
+    <sys:String x:Key="Str_PausePlayback">⏸ Pause</sys:String>
+    <sys:String x:Key="Str_ApplyTrim">Trim &amp; Save as New Take</sys:String>
+    <sys:String x:Key="Str_Play">▶ Play</sys:String>
+    <sys:String x:Key="Str_Delete">Delete</sys:String>
+    <sys:String x:Key="Str_UseThisTake">Use This Take</sys:String>
+    <sys:String x:Key="Str_Cancel">Cancel</sys:String>
+    <sys:String x:Key="Str_RecordingStartFailed">Recording could not be started: {0}</sys:String>
+    <sys:String x:Key="Str_ImportTakeFailed">'{0}' could not be imported: {1}</sys:String>
+    <sys:String x:Key="Str_PlaybackFailed">Playback failed: {0}</sys:String>
+    <sys:String x:Key="Str_FileReadFailed">File could not be read: {0}</sys:String>
+    <sys:String x:Key="Str_TrimFailed">Trim failed: {0}</sys:String>
+    <sys:String x:Key="Str_SelectTakeFirst">Please select a take first.</sys:String>
+    <sys:String x:Key="Str_SelectOrRecordTakeFirst">Please select or record a take first.</sys:String>
+    <sys:String x:Key="Str_TrimDurationText">Start: {0:0.00}s, End: {1:0.00}s, Length after trim: {2:0.00}s</sys:String>
+    <sys:String x:Key="Str_TakeTrimmedSuffix"> (trimmed)</sys:String>
+    <sys:String x:Key="Str_TakeName">Take {0}</sys:String>
     <sys:String x:Key="Str_PackGeneratedSuccess">Spotter pack generated successfully at:</sys:String>
     <sys:String x:Key="Str_Failed">Failed.</sys:String>
     <sys:String x:Key="Str_NoGoogleApiKeyForTranslation">Please configure a Google API key under 'Settings' first (the Cloud Translation API must be enabled).</sys:String>

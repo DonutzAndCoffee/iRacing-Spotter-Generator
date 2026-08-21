@@ -23,6 +23,8 @@ namespace iRacing_Spotter_Generator
             BitsPerSampleComboBox.ItemsSource = BitsPerSampleOptions;
             BitsPerSampleComboBox.SelectedItem = currentSettings.RecordingBitsPerSample;
 
+            OutputVolumeTextBox.Text = currentSettings.OutputVolume.ToString(System.Globalization.CultureInfo.InvariantCulture);
+
             DefaultVoiceComboBox.SelectedValue = currentSettings.DefaultGoogleVoiceName;
 
             if (!string.IsNullOrWhiteSpace(currentSettings.GoogleApiKey))
@@ -54,7 +56,10 @@ namespace iRacing_Spotter_Generator
                 GoogleApiKey = ApiKeyPasswordBox.Password.Trim(),
                 DefaultGoogleVoiceName = DefaultVoiceComboBox.SelectedValue as string ?? string.Empty,
                 RecordingSampleRate = SampleRateComboBox.SelectedItem is int rate ? rate : 5512,
-                RecordingBitsPerSample = BitsPerSampleComboBox.SelectedItem is int bits ? bits : 8
+                RecordingBitsPerSample = BitsPerSampleComboBox.SelectedItem is int bits ? bits : 8,
+                OutputVolume = double.TryParse(
+                    OutputVolumeTextBox.Text, System.Globalization.NumberStyles.Float,
+                    System.Globalization.CultureInfo.InvariantCulture, out var volume) ? volume : 1.0
             };
 
             AppSettingsService.Save(Settings);

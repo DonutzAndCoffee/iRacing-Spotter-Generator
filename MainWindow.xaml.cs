@@ -53,6 +53,11 @@ namespace iRacing_Spotter_Generator
             SquelchEnabledCheckBox.IsChecked = _settings.SquelchEnabled;
             SquelchDurationTextBox.Text = _settings.SquelchDurationMs.ToString();
             SquelchVolumeTextBox.Text = _settings.SquelchVolume.ToString(System.Globalization.CultureInfo.InvariantCulture);
+            RadioEffectEnabledCheckBox.IsChecked = _settings.RadioEffectEnabled;
+            RadioEffectLowCutTextBox.Text = _settings.RadioEffectLowCutHz.ToString();
+            RadioEffectHighCutTextBox.Text = _settings.RadioEffectHighCutHz.ToString();
+            RadioEffectDistortionTextBox.Text = _settings.RadioEffectDistortion.ToString(System.Globalization.CultureInfo.InvariantCulture);
+            OutputVolumeTextBox.Text = _settings.OutputVolume.ToString(System.Globalization.CultureInfo.InvariantCulture);
 
             foreach (ComboBoxItem item in LanguageComboBox.Items)
             {
@@ -516,6 +521,15 @@ namespace iRacing_Spotter_Generator
                 SquelchVolume = double.TryParse(
                     SquelchVolumeTextBox.Text, System.Globalization.NumberStyles.Float,
                     System.Globalization.CultureInfo.InvariantCulture, out var volume) ? volume : 0.5,
+                RadioEffectEnabled = RadioEffectEnabledCheckBox.IsChecked == true,
+                RadioEffectLowCutHz = int.TryParse(RadioEffectLowCutTextBox.Text, out var lowCutHz) ? lowCutHz : 300,
+                RadioEffectHighCutHz = int.TryParse(RadioEffectHighCutTextBox.Text, out var highCutHz) ? highCutHz : 3000,
+                RadioEffectDistortion = double.TryParse(
+                    RadioEffectDistortionTextBox.Text, System.Globalization.NumberStyles.Float,
+                    System.Globalization.CultureInfo.InvariantCulture, out var distortion) ? distortion : 0.2,
+                OutputVolume = double.TryParse(
+                    OutputVolumeTextBox.Text, System.Globalization.NumberStyles.Float,
+                    System.Globalization.CultureInfo.InvariantCulture, out var outputVolume) ? outputVolume : 1.0,
                 Language = LocalizationManager.CurrentLanguage
             };
 
@@ -556,11 +570,17 @@ namespace iRacing_Spotter_Generator
                     var squelchVolume = _settings.SquelchVolume;
                     var addSquelchStart = message.AddSquelchStart;
                     var addSquelchEnd = message.AddSquelchEnd;
+                    var radioEffectEnabled = _settings.RadioEffectEnabled && message.AddRadioEffect;
+                    var radioEffectLowCutHz = _settings.RadioEffectLowCutHz;
+                    var radioEffectHighCutHz = _settings.RadioEffectHighCutHz;
+                    var radioEffectDistortion = _settings.RadioEffectDistortion;
+                    var outputVolume = _settings.OutputVolume;
 
                     Task.Run(() =>
                     {
                         var convertedPath = Path.Combine(Path.GetTempPath(), $"iracing_preview_conv_{Guid.NewGuid():N}.wav");
                         var squelchedPath = Path.Combine(Path.GetTempPath(), $"iracing_preview_{Guid.NewGuid():N}.wav");
+                        var volumePath = Path.Combine(Path.GetTempPath(), $"iracing_preview_vol_{Guid.NewGuid():N}.wav");
 
                         try
                         {
@@ -569,6 +589,15 @@ namespace iRacing_Spotter_Generator
                             // the pack export does, so the preview matches
                             // what will end up in the final pack.
                             AudioFormatConverter.ConvertFile(takePath, convertedPath, sampleRate, bitsPerSample);
+
+                            if (radioEffectEnabled)
+                            {
+                                var radioEffectTempPath = Path.Combine(Path.GetTempPath(), $"iracing_preview_radio_{Guid.NewGuid():N}.wav");
+                                RadioEffectProcessor.Apply(
+                                    convertedPath, radioEffectTempPath, radioEffectLowCutHz, radioEffectHighCutHz, radioEffectDistortion);
+                                File.Copy(radioEffectTempPath, convertedPath, overwrite: true);
+                                File.Delete(radioEffectTempPath);
+                            }
 
                             string playbackPath;
                             if (squelchEnabled)
@@ -583,12 +612,18 @@ namespace iRacing_Spotter_Generator
                                 playbackPath = convertedPath;
                             }
 
+                            if (Math.Abs(outputVolume - 1.0) >= 0.0001)
+                            {
+                                VolumeProcessor.Apply(playbackPath, volumePath, outputVolume);
+                                playbackPath = volumePath;
+                            }
+
                             using var player = new System.Media.SoundPlayer(playbackPath);
                             player.PlaySync();
                         }
                         finally
                         {
-                            foreach (var tempFile in new[] { convertedPath, squelchedPath })
+                            foreach (var tempFile in new[] { convertedPath, squelchedPath, volumePath })
                             {
                                 try
                                 {
@@ -634,7 +669,9 @@ namespace iRacing_Spotter_Generator
                     await PackGenerator.PreviewGoogleAsync(
                         message.Text, _settings.GoogleApiKey, voiceName, languageCode,
                         _settings.RecordingSampleRate, _settings.RecordingBitsPerSample,
-                        _settings.SquelchEnabled, _settings.SquelchDurationMs, _settings.SquelchVolume);
+                        _settings.SquelchEnabled, _settings.SquelchDurationMs, _settings.SquelchVolume,
+                        _settings.RadioEffectEnabled && message.AddRadioEffect, _settings.RadioEffectLowCutHz, _settings.RadioEffectHighCutHz,
+                        _settings.RadioEffectDistortion, _settings.OutputVolume);
                 }
                 catch (Exception ex)
                 {
@@ -676,6 +713,117 @@ namespace iRacing_Spotter_Generator
             if (dialog.ShowDialog(this) == true)
             {
                 DestinationTextBox.Text = dialog.FolderName;
+            }
+        }
+
+        /// <summary>
+        /// Imports a finished/exported spotter pack (a folder containing a
+        /// spmsg.ini plus its generated wav files) and takes it over as the
+        /// current project, so it can be reviewed/edited further instead of
+        /// being treated as a black box. Every message covered by the pack's
+        /// spmsg.ini is set to use the existing wav file as a "Recording"
+        /// source (no regeneration), while every other known MsgId keeps
+        /// coming from the built-in template as usual.
+        /// </summary>
+        private void LicenseButton_Click(object sender, RoutedEventArgs e)
+        {
+            var licenseWindow = new LicenseWindow { Owner = this };
+            licenseWindow.ShowDialog();
+        }
+
+        private void ImportPackButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (!ConfirmDiscardUnsavedChanges())
+            {
+                return;
+            }
+
+            var folderDialog = new OpenFolderDialog
+            {
+                Title = LocalizationManager.GetString("Str_ImportPackTitle")
+            };
+
+            if (folderDialog.ShowDialog(this) != true)
+            {
+                return;
+            }
+
+            var folder = folderDialog.FolderName;
+            var spmsgPath = Directory.EnumerateFiles(folder)
+                .FirstOrDefault(f =>
+                {
+                    var name = Path.GetFileName(f);
+                    return string.Equals(name, "spmsg.ini", StringComparison.OrdinalIgnoreCase) ||
+                           string.Equals(name, "spmsg.txt", StringComparison.OrdinalIgnoreCase);
+                });
+
+            if (spmsgPath is null)
+            {
+                MessageBox.Show(this, LocalizationManager.GetString("Str_ImportPackNoSpmsg"),
+                    LocalizationManager.GetString("Str_ImportPackTitle"), MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            try
+            {
+                var importedMessages = SpmsgTemplateParser.Parse(spmsgPath);
+                var importedByMsgId = importedMessages
+                    .Where(m => !m.IsComment)
+                    .GroupBy(m => m.MsgId, StringComparer.OrdinalIgnoreCase)
+                    .ToDictionary(g => g.Key, g => g.First(), StringComparer.OrdinalIgnoreCase);
+
+                foreach (var message in _allMessages)
+                {
+                    message.PropertyChanged -= Message_PropertyChanged;
+                }
+
+                DestinationTextBox.Text = string.Empty;
+                PackNameTextBox.Text = string.Empty;
+                LoadTemplate();
+
+                var importedCount = 0;
+                foreach (var message in _allMessages)
+                {
+                    if (message.IsComment || !importedByMsgId.TryGetValue(message.MsgId, out var imported))
+                    {
+                        continue;
+                    }
+
+                    message.Enabled = imported.Enabled;
+
+                    if (!imported.Enabled || string.IsNullOrWhiteSpace(imported.WavFileName))
+                    {
+                        continue;
+                    }
+
+                    var wavPath = Path.Combine(folder, imported.WavFileName);
+                    if (!File.Exists(wavPath))
+                    {
+                        continue;
+                    }
+
+                    message.Text = imported.Text;
+                    message.SourceType = AudioSourceType.Recording;
+                    message.RecordedTakePath = wavPath;
+                    message.AllTakes = new List<TakeInfo>
+                    {
+                        new TakeInfo { FilePath = wavPath, Name = "Imported" }
+                    };
+                    importedCount++;
+                }
+
+                DestinationTextBox.Text = folder;
+                PackNameTextBox.Text = new DirectoryInfo(folder).Name;
+
+                RefreshView(FilterTextBox.Text);
+                RefreshExportedFlags();
+                StatusTextBlock.Text = $"{LocalizationManager.GetString("Str_PackImported")} {importedCount}";
+                _isDirty = true;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(this, $"{LocalizationManager.GetString("Str_ImportPackFailed")} {ex.Message}",
+                    LocalizationManager.GetString("Str_ImportPackTitle"), MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -760,7 +908,10 @@ namespace iRacing_Spotter_Generator
                         AllTakes = message.AllTakes.Select(t => new TakeInfo { FilePath = t.FilePath, Name = t.Name, Rating = t.Rating }).ToList(),
                         IsComment = message.IsComment,
                         RawLine = message.RawLine,
-                        Status = message.Status
+                        Status = message.Status,
+                        AddSquelchStart = message.AddSquelchStart,
+                        AddSquelchEnd = message.AddSquelchEnd,
+                        AddRadioEffect = message.AddRadioEffect
                     });
                 }
 
@@ -850,7 +1001,10 @@ namespace iRacing_Spotter_Generator
                         AllTakes = message.AllTakes.Select(t => new TakeInfo { FilePath = t.FilePath, Name = t.Name, Rating = t.Rating }).ToList(),
                         IsComment = message.IsComment,
                         RawLine = message.RawLine,
-                        Status = message.Status
+                        Status = message.Status,
+                        AddSquelchStart = message.AddSquelchStart,
+                        AddSquelchEnd = message.AddSquelchEnd,
+                        AddRadioEffect = message.AddRadioEffect
                     });
                 }
 
@@ -910,6 +1064,11 @@ namespace iRacing_Spotter_Generator
                 SquelchEnabled = _settings.SquelchEnabled,
                 SquelchDurationMs = _settings.SquelchDurationMs,
                 SquelchVolume = _settings.SquelchVolume,
+                RadioEffectEnabled = _settings.RadioEffectEnabled,
+                RadioEffectLowCutHz = _settings.RadioEffectLowCutHz,
+                RadioEffectHighCutHz = _settings.RadioEffectHighCutHz,
+                RadioEffectDistortion = _settings.RadioEffectDistortion,
+                OutputVolume = _settings.OutputVolume,
                 RequiredMsgIds = _knownMsgIds,
                 OnlyGenerateChanged = OnlyChangedCheckBox.IsChecked == true
             };
@@ -961,6 +1120,37 @@ namespace iRacing_Spotter_Generator
         private void OnlyChangedCheckBox_Changed(object sender, RoutedEventArgs e)
         {
             RefreshPendingSoundsList();
+        }
+
+        /// <summary>
+        /// Sets or clears the given per-row checkbox flag (AddSquelchStart,
+        /// AddSquelchEnd, or AddRadioEffect) for every message in one go.
+        /// The button's Tag encodes "PropertyName:True" or "PropertyName:False".
+        /// </summary>
+        private void BulkToggleColumnButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is not FrameworkElement { Tag: string tag } ||
+                tag.Split(':') is not [var propertyName, var valueText] ||
+                !bool.TryParse(valueText, out var value))
+            {
+                return;
+            }
+
+            foreach (var message in _allMessages)
+            {
+                switch (propertyName)
+                {
+                    case nameof(SpotterMessage.AddSquelchStart):
+                        message.AddSquelchStart = value;
+                        break;
+                    case nameof(SpotterMessage.AddSquelchEnd):
+                        message.AddSquelchEnd = value;
+                        break;
+                    case nameof(SpotterMessage.AddRadioEffect):
+                        message.AddRadioEffect = value;
+                        break;
+                }
+            }
         }
 
         /// <summary>

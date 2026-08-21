@@ -114,8 +114,11 @@ namespace iRacing_Spotter_Generator
             _playbackTimer.Tick += PlaybackTimer_Tick;
 
             MessageTextBlock.Text = $"{msgId}: \"{messageText}\"";
-            QualityTextBlock.Text = $"Aufnahme in hoher Qualität, Export in Zielqualität: {sampleRate} Hz / {bitsPerSample} Bit (wie iRacing)";
+            QualityTextBlock.Text = string.Format(
+                LocalizationManager.GetString("Str_RecordingQualityInfo"), sampleRate, bitsPerSample);
             TakesListBox.ItemsSource = _takes;
+            RecordButton.Content = LocalizationManager.GetString("Str_StartRecording");
+            PlayPauseTrimButton.Content = LocalizationManager.GetString("Str_PlayTrimSegment");
 
             // Use a stable, per-row folder (keyed by the message's own id)
             // instead of a random folder each time, so takes recorded across
@@ -145,7 +148,9 @@ namespace iRacing_Spotter_Generator
                     var take = new TakeItem
                     {
                         FilePath = existingTake.FilePath,
-                        Name = string.IsNullOrWhiteSpace(existingTake.Name) ? $"Take {takeIndex}" : existingTake.Name,
+                        Name = string.IsNullOrWhiteSpace(existingTake.Name)
+                            ? string.Format(LocalizationManager.GetString("Str_TakeName"), takeIndex)
+                            : existingTake.Name,
                         Rating = existingTake.Rating
                     };
                     _takes.Add(take);
@@ -181,11 +186,15 @@ namespace iRacing_Spotter_Generator
             {
                 Dispatcher.Invoke(() =>
                 {
-                    var take = new TakeItem { FilePath = filePath, Name = $"Take {_takeCounter}" };
+                    var take = new TakeItem
+                    {
+                        FilePath = filePath,
+                        Name = string.Format(LocalizationManager.GetString("Str_TakeName"), _takeCounter)
+                    };
                     _takes.Add(take);
                     TakesListBox.SelectedItem = take;
 
-                    RecordButton.Content = "● Aufnahme starten";
+                    RecordButton.Content = LocalizationManager.GetString("Str_StartRecording");
                     RecordingStatusTextBlock.Text = string.Empty;
                 });
             };
@@ -196,13 +205,71 @@ namespace iRacing_Spotter_Generator
                 // the raw take doesn't lose quality; downsampling to the
                 // target quality happens only on preview/export.
                 _recorder.Start(filePath);
-                RecordButton.Content = "■ Aufnahme stoppen";
-                RecordingStatusTextBlock.Text = "Aufnahme läuft...";
+                RecordButton.Content = LocalizationManager.GetString("Str_StopRecording");
+                RecordingStatusTextBlock.Text = LocalizationManager.GetString("Str_RecordingInProgress");
             }
             catch (Exception ex)
             {
-                MessageBox.Show(this, $"Aufnahme konnte nicht gestartet werden: {ex.Message}",
-                    "Aufnahme", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(this, string.Format(LocalizationManager.GetString("Str_RecordingStartFailed"), ex.Message),
+                    LocalizationManager.GetString("Str_TakesWindowTitle"), MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        /// <summary>
+        /// Lets the user pick one or more existing wav files (e.g. from a
+        /// finished/imported pack, or recorded externally) and adds each of
+        /// them as a new take for this row, copying them into this row's
+        /// stable takes folder so they're managed just like recorded takes.
+        /// </summary>
+        private void ImportTakesButton_Click(object sender, RoutedEventArgs e)
+        {
+            var dialog = new Microsoft.Win32.OpenFileDialog
+            {
+                Title = LocalizationManager.GetString("Str_ImportWavFiles"),
+                Filter = "Wav files (*.wav)|*.wav|All files (*.*)|*.*",
+                Multiselect = true
+            };
+
+            if (dialog.ShowDialog(this) != true)
+            {
+                return;
+            }
+
+            TakeItem? lastImported = null;
+
+            foreach (var sourcePath in dialog.FileNames)
+            {
+                try
+                {
+                    _takeCounter++;
+                    var extension = Path.GetExtension(sourcePath);
+                    if (string.IsNullOrEmpty(extension))
+                    {
+                        extension = ".wav";
+                    }
+
+                    var destinationPath = Path.Combine(_tempFolder, $"take_{_takeCounter}_imported{extension}");
+                    File.Copy(sourcePath, destinationPath, overwrite: true);
+
+                    var take = new TakeItem
+                    {
+                        FilePath = destinationPath,
+                        Name = Path.GetFileNameWithoutExtension(sourcePath)
+                    };
+                    _takes.Add(take);
+                    lastImported = take;
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(this, string.Format(
+                        LocalizationManager.GetString("Str_ImportTakeFailed"), Path.GetFileName(sourcePath), ex.Message),
+                        LocalizationManager.GetString("Str_ImportWavFiles"), MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+
+            if (lastImported is not null)
+            {
+                TakesListBox.SelectedItem = lastImported;
             }
         }
 
@@ -220,8 +287,8 @@ namespace iRacing_Spotter_Generator
             }
             catch (Exception ex)
             {
-                MessageBox.Show(this, $"Wiedergabe fehlgeschlagen: {ex.Message}",
-                    "Aufnahme", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(this, string.Format(LocalizationManager.GetString("Str_PlaybackFailed"), ex.Message),
+                    LocalizationManager.GetString("Str_TakesWindowTitle"), MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -265,7 +332,7 @@ namespace iRacing_Spotter_Generator
             {
                 TrimStartSlider.IsEnabled = false;
                 TrimEndSlider.IsEnabled = false;
-                TrimDurationTextBlock.Text = $"Datei konnte nicht gelesen werden: {ex.Message}";
+                TrimDurationTextBlock.Text = string.Format(LocalizationManager.GetString("Str_FileReadFailed"), ex.Message);
                 _waveformPeaks = Array.Empty<float>();
                 WaveformPolyline.Points.Clear();
             }
@@ -390,8 +457,9 @@ namespace iRacing_Spotter_Generator
 
         private void UpdateTrimDurationText(double resultSeconds)
         {
-            TrimDurationTextBlock.Text =
-                $"Start: {TrimStartSlider.Value:0.00}s, Ende: {TrimEndSlider.Value:0.00}s, L\u00E4nge nach Schnitt: {resultSeconds:0.00}s";
+            TrimDurationTextBlock.Text = string.Format(
+                LocalizationManager.GetString("Str_TrimDurationText"),
+                TrimStartSlider.Value, TrimEndSlider.Value, resultSeconds);
         }
 
         private void PlayPauseTrimButton_Click(object sender, RoutedEventArgs e)
@@ -400,7 +468,7 @@ namespace iRacing_Spotter_Generator
             {
                 _trimPlayer.Pause();
                 _playbackTimer.Stop();
-                PlayPauseTrimButton.Content = "▶ Ausschnitt abspielen";
+                PlayPauseTrimButton.Content = LocalizationManager.GetString("Str_PlayTrimSegment");
                 return;
             }
 
@@ -409,7 +477,7 @@ namespace iRacing_Spotter_Generator
                 // Resume, but stop automatically once we reach the trim end.
                 _trimPlayer.Play();
                 _playbackTimer.Start();
-                PlayPauseTrimButton.Content = "⏸ Pause";
+                PlayPauseTrimButton.Content = LocalizationManager.GetString("Str_PausePlayback");
                 return;
             }
 
@@ -440,14 +508,14 @@ namespace iRacing_Spotter_Generator
                 _trimPlayer.PlaybackStopped += TrimPlayer_PlaybackStopped;
                 _trimPlayer.Play();
 
-                PlayPauseTrimButton.Content = "⏸ Pause";
+                PlayPauseTrimButton.Content = LocalizationManager.GetString("Str_PausePlayback");
                 PlaybackPositionLine.Visibility = Visibility.Visible;
                 _playbackTimer.Start();
             }
             catch (Exception ex)
             {
-                MessageBox.Show(this, $"Wiedergabe fehlgeschlagen: {ex.Message}",
-                    "Schnitt-Tool", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(this, string.Format(LocalizationManager.GetString("Str_PlaybackFailed"), ex.Message),
+                    LocalizationManager.GetString("Str_TrimToolTitle"), MessageBoxButton.OK, MessageBoxImage.Error);
                 StopTrimPlayback();
             }
         }
@@ -457,7 +525,7 @@ namespace iRacing_Spotter_Generator
             Dispatcher.Invoke(() =>
             {
                 _playbackTimer.Stop();
-                PlayPauseTrimButton.Content = "▶ Ausschnitt abspielen";
+                PlayPauseTrimButton.Content = LocalizationManager.GetString("Str_PlayTrimSegment");
                 PlaybackPositionLine.Visibility = Visibility.Collapsed;
             });
         }
@@ -478,7 +546,7 @@ namespace iRacing_Spotter_Generator
             _trimReader = null;
             _trimPlaybackPath = null;
 
-            PlayPauseTrimButton.Content = "▶ Ausschnitt abspielen";
+            PlayPauseTrimButton.Content = LocalizationManager.GetString("Str_PlayTrimSegment");
             PlaybackPositionLine.Visibility = Visibility.Collapsed;
         }
 
@@ -547,8 +615,8 @@ namespace iRacing_Spotter_Generator
         {
             if (TakesListBox.SelectedItem is not TakeItem take || !File.Exists(take.FilePath))
             {
-                MessageBox.Show(this, "Bitte zuerst einen Take auswählen.",
-                    "Schnitt-Tool", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show(this, LocalizationManager.GetString("Str_SelectTakeFirst"),
+                    LocalizationManager.GetString("Str_TrimToolTitle"), MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
@@ -564,14 +632,18 @@ namespace iRacing_Spotter_Generator
             {
                 AudioTrimHelper.Trim(take.FilePath, trimmedPath, start, end);
 
-                var trimmedTake = new TakeItem { FilePath = trimmedPath, Name = $"{take.Name} (geschnitten)" };
+                var trimmedTake = new TakeItem
+                {
+                    FilePath = trimmedPath,
+                    Name = take.Name + LocalizationManager.GetString("Str_TakeTrimmedSuffix")
+                };
                 _takes.Add(trimmedTake);
                 TakesListBox.SelectedItem = trimmedTake;
             }
             catch (Exception ex)
             {
-                MessageBox.Show(this, $"Zuschneiden fehlgeschlagen: {ex.Message}",
-                    "Schnitt-Tool", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(this, string.Format(LocalizationManager.GetString("Str_TrimFailed"), ex.Message),
+                    LocalizationManager.GetString("Str_TrimToolTitle"), MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -602,8 +674,8 @@ namespace iRacing_Spotter_Generator
         {
             if (TakesListBox.SelectedItem is not TakeItem take)
             {
-                MessageBox.Show(this, "Bitte zuerst einen Take auswählen oder aufnehmen.",
-                    "Aufnahme", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show(this, LocalizationManager.GetString("Str_SelectOrRecordTakeFirst"),
+                    LocalizationManager.GetString("Str_TakesWindowTitle"), MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 

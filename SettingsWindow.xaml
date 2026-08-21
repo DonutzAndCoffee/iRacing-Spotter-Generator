@@ -15,6 +15,7 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
@@ -35,9 +36,14 @@
             <ComboBox x:Name="BitsPerSampleComboBox" Width="80" VerticalAlignment="Center"/>
         </StackPanel>
         <TextBlock Grid.Row="7" TextWrapping="Wrap" Foreground="Gray" Margin="0,5,0,0"
-                   Text="iRacing selbst spielt Spotter-Ansagen mit 5512 Hz / 8 Bit ab (klingt wie Boxenfunk). Höhere Werte klingen sauberer, werden von iRacing aber ohnehin auf dieses Format heruntergerechnet."/>
+                   Text="iRacing selbst spielt Spotter-Ansagen mit 5512 Hz / 8 Bit ab (klingt wie Boxenfunk). iRacing verändert die Qualität deiner Dateien nicht, wähle also das Format, das der finale Sound haben soll."/>
 
-        <StackPanel Grid.Row="8" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,15,0,0">
+        <StackPanel Grid.Row="8" Orientation="Horizontal">
+            <TextBlock Text="Lautstärke (1.0 = unverändert):" VerticalAlignment="Center" Margin="0,15,5,0"/>
+            <TextBox x:Name="OutputVolumeTextBox" Width="60" VerticalAlignment="Center" Margin="0,15,0,0"/>
+        </StackPanel>
+
+        <StackPanel Grid.Row="9" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,15,0,0">
             <Button Content="Speichern" Width="90" Margin="0,0,10,0" Click="SaveButton_Click" IsDefault="True"/>
             <Button Content="Abbrechen" Width="90" Click="CancelButton_Click" IsCancel="True"/>
         </StackPanel>

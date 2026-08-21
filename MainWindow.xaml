@@ -22,9 +22,15 @@
                 <x:Type TypeName="models:RowStatus"/>
             </ObjectDataProvider.MethodParameters>
         </ObjectDataProvider>
+        <Style x:Key="ToolbarSeparatorStyle" TargetType="Border">
+            <Setter Property="Width" Value="1"/>
+            <Setter Property="Margin" Value="10,2"/>
+            <Setter Property="Background" Value="#FFD0D0D0"/>
+        </Style>
     </Window.Resources>
     <Grid Margin="10">
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
@@ -36,17 +42,23 @@
         </Grid.RowDefinitions>
 
         <!-- Toolbar -->
-        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,10">
+        <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Auto" Margin="0,0,0,10">
+        <StackPanel Orientation="Horizontal">
             <TextBlock Text="{DynamicResource Str_Filter}" VerticalAlignment="Center" Margin="0,0,5,0"/>
             <TextBox x:Name="FilterTextBox" Width="220" VerticalAlignment="Center"
                      TextChanged="FilterTextBox_TextChanged"/>
-            <Button Content="{DynamicResource Str_LoadGoogleVoices}" Margin="20,0,0,0" Padding="8,2" Click="LoadGoogleVoicesButton_Click"/>
-            <ToggleButton x:Name="SettingsToggleButton" Content="{DynamicResource Str_Settings}" Margin="10,0,0,0" Padding="8,2"/>
-            <Button Content="{DynamicResource Str_AddMessage}" Margin="20,0,0,0" Padding="8,2" FontWeight="Bold" Click="AddMessageButton_Click"/>
-            <Button Content="{DynamicResource Str_NewProject}" Margin="20,0,0,0" Padding="8,2" Click="NewProjectButton_Click"/>
-            <Button Content="{DynamicResource Str_SaveProject}" Margin="10,0,0,0" Padding="8,2" Click="SaveProjectButton_Click"/>
+
+            <Border Style="{StaticResource ToolbarSeparatorStyle}"/>
+
+            <Button Content="{DynamicResource Str_NewProject}" Padding="8,2" Click="NewProjectButton_Click"/>
             <Button Content="{DynamicResource Str_OpenProject}" Margin="10,0,0,0" Padding="8,2" Click="OpenProjectButton_Click"/>
-            <Button x:Name="TranslateAllButton" Content="{DynamicResource Str_TranslateAll}" Margin="20,0,0,0" Padding="8,2" Click="TranslateAllButton_Click">
+            <Button Content="{DynamicResource Str_SaveProject}" Margin="10,0,0,0" Padding="8,2" Click="SaveProjectButton_Click"/>
+            <Button Content="{DynamicResource Str_ImportPack}" Margin="10,0,0,0" Padding="8,2" Click="ImportPackButton_Click"/>
+
+            <Border Style="{StaticResource ToolbarSeparatorStyle}"/>
+
+            <Button Content="{DynamicResource Str_AddMessage}" Padding="8,2" FontWeight="Bold" Click="AddMessageButton_Click"/>
+            <Button x:Name="TranslateAllButton" Content="{DynamicResource Str_TranslateAll}" Margin="10,0,0,0" Padding="8,2" Click="TranslateAllButton_Click">
                 <Button.ContextMenu>
                     <ContextMenu x:Name="TranslateAllContextMenu">
                         <MenuItem Header="Deutsch" Tag="de:Deutsch" Click="TranslateAllLanguageMenuItem_Click"/>
@@ -60,12 +72,32 @@
                     </ContextMenu>
                 </Button.ContextMenu>
             </Button>
-            <TextBlock Text="{DynamicResource Str_Language}" VerticalAlignment="Center" Margin="20,0,5,0"/>
+
+            <Border Style="{StaticResource ToolbarSeparatorStyle}"/>
+
+            <Button Content="{DynamicResource Str_LoadGoogleVoices}" Padding="8,2" Click="LoadGoogleVoicesButton_Click"/>
+            <ToggleButton x:Name="SettingsToggleButton" Margin="10,0,0,0" Padding="8,2"
+                          ToolTip="{DynamicResource Str_SettingsToggleTooltip}">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="{DynamicResource Str_Settings}"/>
+                    <TextBlock Margin="6,0,0,0" FontSize="9" VerticalAlignment="Center"
+                               Text="{Binding IsChecked, RelativeSource={RelativeSource AncestorType=ToggleButton}, Converter={x:Static local:BoolToArrowConverter.Instance}}"/>
+                </StackPanel>
+            </ToggleButton>
+
+            <Border Style="{StaticResource ToolbarSeparatorStyle}"/>
+
+            <TextBlock Text="{DynamicResource Str_Language}" VerticalAlignment="Center" Margin="0,0,5,0"/>
             <ComboBox x:Name="LanguageComboBox" Width="90" VerticalAlignment="Center" SelectionChanged="LanguageComboBox_SelectionChanged">
                 <ComboBoxItem Content="Deutsch" Tag="de"/>
                 <ComboBoxItem Content="English" Tag="en"/>
             </ComboBox>
+
+            <Border Style="{StaticResource ToolbarSeparatorStyle}"/>
+
+            <Button Content="{DynamicResource Str_License}" Padding="8,2" Click="LicenseButton_Click"/>
         </StackPanel>
+        </ScrollViewer>
 
         <!-- Inline settings panel -->
         <Border Grid.Row="1" BorderBrush="Gray" BorderThickness="1" Padding="10" Margin="0,0,0,10"
@@ -120,6 +152,27 @@
                 <TextBlock TextWrapping="Wrap" Foreground="Gray" Margin="0,5,0,10"
                            Text="{DynamicResource Str_SquelchHint}"/>
 
+                <TextBlock Text="{DynamicResource Str_RadioEffectHeader}" FontWeight="Bold" Margin="0,15,0,5"/>
+                <StackPanel Orientation="Horizontal">
+                    <CheckBox x:Name="RadioEffectEnabledCheckBox" Content="{DynamicResource Str_RadioEffectAutoAdd}" VerticalAlignment="Center" Margin="0,0,20,0"/>
+                    <TextBlock Text="{DynamicResource Str_RadioEffectLowCutLabel}" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                    <TextBox x:Name="RadioEffectLowCutTextBox" Width="60" VerticalAlignment="Center" Margin="0,0,20,0"/>
+                    <TextBlock Text="{DynamicResource Str_RadioEffectHighCutLabel}" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                    <TextBox x:Name="RadioEffectHighCutTextBox" Width="60" VerticalAlignment="Center" Margin="0,0,20,0"/>
+                    <TextBlock Text="{DynamicResource Str_RadioEffectDistortionLabel}" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                    <TextBox x:Name="RadioEffectDistortionTextBox" Width="60" VerticalAlignment="Center"/>
+                </StackPanel>
+                <TextBlock TextWrapping="Wrap" Foreground="Gray" Margin="0,5,0,10"
+                           Text="{DynamicResource Str_RadioEffectHint}"/>
+
+                <TextBlock Text="{DynamicResource Str_OutputVolumeHeader}" FontWeight="Bold" Margin="0,15,0,5"/>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="{DynamicResource Str_OutputVolumeLabel}" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                    <TextBox x:Name="OutputVolumeTextBox" Width="60" VerticalAlignment="Center"/>
+                </StackPanel>
+                <TextBlock TextWrapping="Wrap" Foreground="Gray" Margin="0,5,0,10"
+                           Text="{DynamicResource Str_OutputVolumeHint}"/>
+
                 <StackPanel Orientation="Horizontal">
                     <Button Content="{DynamicResource Str_SaveSettings}" Padding="8,4" Click="SaveSettingsButton_Click" FontWeight="Bold"/>
                 </StackPanel>
@@ -129,7 +182,21 @@
         <TextBlock Grid.Row="2" x:Name="GoogleStatusTextBlock" Foreground="Gray" Margin="0,0,0,8"/>
 
         <!-- Message grid -->
-        <DataGrid x:Name="MessagesDataGrid" Grid.Row="3" AutoGenerateColumns="False"
+        <!-- Bulk row toggles -->
+        <StackPanel Grid.Row="3" Orientation="Horizontal" Margin="0,0,0,5">
+            <TextBlock Text="{DynamicResource Str_BulkToggleLabel}" VerticalAlignment="Center" Margin="0,0,10,0" FontWeight="Bold"/>
+            <TextBlock Text="{DynamicResource Str_ColumnStartTooltip}" VerticalAlignment="Center" Margin="0,0,4,0"/>
+            <Button Content="{DynamicResource Str_CheckAll}" Tag="AddSquelchStart:True" Click="BulkToggleColumnButton_Click" Padding="6,2" Margin="0,0,2,0"/>
+            <Button Content="{DynamicResource Str_UncheckAll}" Tag="AddSquelchStart:False" Click="BulkToggleColumnButton_Click" Padding="6,2" Margin="0,0,15,0"/>
+            <TextBlock Text="{DynamicResource Str_ColumnEndTooltip}" VerticalAlignment="Center" Margin="0,0,4,0"/>
+            <Button Content="{DynamicResource Str_CheckAll}" Tag="AddSquelchEnd:True" Click="BulkToggleColumnButton_Click" Padding="6,2" Margin="0,0,2,0"/>
+            <Button Content="{DynamicResource Str_UncheckAll}" Tag="AddSquelchEnd:False" Click="BulkToggleColumnButton_Click" Padding="6,2" Margin="0,0,15,0"/>
+            <TextBlock Text="{DynamicResource Str_ColumnRadioEffectTooltip}" VerticalAlignment="Center" Margin="0,0,4,0"/>
+            <Button Content="{DynamicResource Str_CheckAll}" Tag="AddRadioEffect:True" Click="BulkToggleColumnButton_Click" Padding="6,2" Margin="0,0,2,0"/>
+            <Button Content="{DynamicResource Str_UncheckAll}" Tag="AddRadioEffect:False" Click="BulkToggleColumnButton_Click" Padding="6,2"/>
+        </StackPanel>
+
+        <DataGrid x:Name="MessagesDataGrid" Grid.Row="4" AutoGenerateColumns="False"
                    CanUserAddRows="False" CanUserDeleteRows="False"
                    ItemsSource="{Binding}" SelectionMode="Extended"
                    PreviewMouseLeftButtonDown="MessagesDataGrid_PreviewMouseLeftButtonDown">
@@ -211,6 +278,14 @@
                         <Binding Path="AddSquelchEnd" UpdateSourceTrigger="PropertyChanged"/>
                     </DataGridCheckBoxColumn.Binding>
                 </DataGridCheckBoxColumn>
+                <DataGridCheckBoxColumn Width="90">
+                    <DataGridCheckBoxColumn.Header>
+                        <TextBlock Text="{DynamicResource Str_ColumnRadioEffect}" ToolTip="{DynamicResource Str_ColumnRadioEffectTooltip}"/>
+                    </DataGridCheckBoxColumn.Header>
+                    <DataGridCheckBoxColumn.Binding>
+                        <Binding Path="AddRadioEffect" UpdateSourceTrigger="PropertyChanged"/>
+                    </DataGridCheckBoxColumn.Binding>
+                </DataGridCheckBoxColumn>
                 <DataGridTextColumn Width="*">
                     <DataGridTextColumn.Header>
                         <TextBlock Text="{DynamicResource Str_ColumnText}" ToolTip="{DynamicResource Str_ColumnTextTooltip}"/>
@@ -274,7 +349,7 @@
         </DataGrid>
 
         <!-- Output options -->
-        <StackPanel Grid.Row="4" Orientation="Horizontal" Margin="0,10,0,10">
+        <StackPanel Grid.Row="5" Orientation="Horizontal" Margin="0,10,0,10">
             <TextBlock Text="{DynamicResource Str_PackNameLabel}" VerticalAlignment="Center" Margin="0,0,5,0"/>
             <TextBox x:Name="PackNameTextBox" Width="200" VerticalAlignment="Center" Text="MySpotterPack"/>
             <TextBlock Text="{DynamicResource Str_DestinationFolderLabel}" VerticalAlignment="Center" Margin="20,0,5,0"/>
@@ -283,7 +358,7 @@
         </StackPanel>
 
         <!-- Generate -->
-        <StackPanel Grid.Row="5" Orientation="Horizontal">
+        <StackPanel Grid.Row="6" Orientation="Horizontal">
             <Button x:Name="GenerateButton" Content="{DynamicResource Str_GeneratePack}" Padding="15,5" FontWeight="Bold"
                     Click="GenerateButton_Click"/>
             <CheckBox x:Name="OnlyChangedCheckBox" Content="{DynamicResource Str_OnlyChangedSounds}"
@@ -294,13 +369,13 @@
         </StackPanel>
 
         <!-- Pending sounds preview -->
-        <Expander x:Name="PendingSoundsExpander" Grid.Row="6" Margin="0,5,0,0"
+        <Expander x:Name="PendingSoundsExpander" Grid.Row="7" Margin="0,5,0,0"
                   Header="{DynamicResource Str_PendingSoundsHeader}" Expanded="PendingSoundsExpander_Expanded">
             <ListBox x:Name="PendingSoundsListBox" MaxHeight="150" Margin="0,5,0,0"/>
         </Expander>
 
         <!-- Footer -->
-        <DockPanel Grid.Row="7" Margin="0,10,0,0" LastChildFill="False">
+        <DockPanel Grid.Row="8" Margin="0,10,0,0" LastChildFill="False">
             
             <StackPanel DockPanel.Dock="Right" Orientation="Vertical" HorizontalAlignment="Center" Margin="10,0,0,0">
                 <Image Source="Assets/AppIcon.png" Width="64" Height="64" HorizontalAlignment="Right"/>

@@ -85,7 +85,33 @@ namespace iRacing_Spotter_Generator.Services
         public double SquelchVolume { get; set; } = 0.5;
 
         /// <summary>
-        /// All MsgIds that must be present in the generated spmsg file at least once,
+        /// Whether the flexible radio effect (bandpass filter + optional
+        /// distortion) is applied to every generated sample.
+        /// </summary>
+        public bool RadioEffectEnabled { get; set; } = false;
+
+        /// <summary>
+        /// Low cutoff frequency (Hz) of the radio effect's bandpass filter.
+        /// </summary>
+        public int RadioEffectLowCutHz { get; set; } = 300;
+
+        /// <summary>
+        /// High cutoff frequency (Hz) of the radio effect's bandpass filter.
+        /// </summary>
+        public int RadioEffectHighCutHz { get; set; } = 3000;
+
+        /// <summary>
+        /// Amount of soft-clip distortion applied by the radio effect (0.0 - 1.0).
+        /// </summary>
+        public double RadioEffectDistortion { get; set; } = 0.2;
+
+        /// <summary>
+        /// Output volume/gain applied to every generated sample (1.0 = unchanged).
+        /// </summary>
+        public double OutputVolume { get; set; } = 1.0;
+
+        /// <summary>
+        /// All MsgIds that must be present
         /// even if every row for them was removed (written as NULL, NULL in that case).
         /// </summary>
         public IEnumerable<string>? RequiredMsgIds { get; set; }
@@ -114,6 +140,69 @@ namespace iRacing_Spotter_Generator.Services
     /// </summary>
     public static class PackGenerator
     {
+        /// <summary>
+        /// Applies the flexible radio effect (bandpass filter + optional
+        /// distortion) to <paramref name="wavPath"/> in place, if enabled
+        /// in <paramref name="options"/> and not opted out for <paramref name="message"/>.
+        /// </summary>
+        private static void ApplyRadioEffectIfEnabled(PackGenerationOptions options, SpotterMessage message, string wavPath)
+        {
+            if (!options.RadioEffectEnabled || !message.AddRadioEffect)
+            {
+                return;
+            }
+
+            var processedPath = Path.Combine(Path.GetTempPath(), $"spgen_radio_{Guid.NewGuid():N}.wav");
+            try
+            {
+                RadioEffectProcessor.Apply(
+                    wavPath, processedPath,
+                    options.RadioEffectLowCutHz, options.RadioEffectHighCutHz, options.RadioEffectDistortion);
+                File.Copy(processedPath, wavPath, overwrite: true);
+            }
+            finally
+            {
+                try
+                {
+                    File.Delete(processedPath);
+                }
+                catch (IOException)
+                {
+                    // Ignore cleanup failures for temp radio-effect files.
+                }
+            }
+        }
+
+        /// <summary>
+        /// Applies the configured output volume/gain to <paramref name="wavPath"/>
+        /// in place, if it differs from 1.0 (unchanged).
+        /// </summary>
+        private static void ApplyVolumeIfNeeded(PackGenerationOptions options, string wavPath)
+        {
+            if (Math.Abs(options.OutputVolume - 1.0) < 0.0001)
+            {
+                return;
+            }
+
+            var processedPath = Path.Combine(Path.GetTempPath(), $"spgen_volume_{Guid.NewGuid():N}.wav");
+            try
+            {
+                VolumeProcessor.Apply(wavPath, processedPath, options.OutputVolume);
+                File.Copy(processedPath, wavPath, overwrite: true);
+            }
+            finally
+            {
+                try
+                {
+                    File.Delete(processedPath);
+                }
+                catch (IOException)
+                {
+                    // Ignore cleanup failures for temp volume files.
+                }
+            }
+        }
+
         public static async Task GenerateAsync(
             IReadOnlyList<SpotterMessage> messages,
             PackGenerationOptions options,
@@ -175,6 +264,7 @@ namespace iRacing_Spotter_Generator.Services
                             AudioFormatConverter.ConvertFile(
                                 message.RecordedTakePath, convertedRecordingPath,
                                 options.GoogleOutputSampleRate, options.GoogleOutputBitsPerSample);
+                            ApplyRadioEffectIfEnabled(options, message, convertedRecordingPath);
 
                             if (options.SquelchEnabled)
                             {
@@ -186,6 +276,8 @@ namespace iRacing_Spotter_Generator.Services
                             {
                                 File.Copy(convertedRecordingPath, wavPath, overwrite: true);
                             }
+
+                            ApplyVolumeIfNeeded(options, wavPath);
                         }
                         finally
                         {
@@ -229,6 +321,7 @@ namespace iRacing_Spotter_Generator.Services
                             await File.WriteAllBytesAsync(tempWavPath, audioBytes, cancellationToken);
                             AudioFormatConverter.ConvertFile(
                                 tempWavPath, convertedWavPath, options.GoogleOutputSampleRate, options.GoogleOutputBitsPerSample);
+                            ApplyRadioEffectIfEnabled(options, message, convertedWavPath);
 
                             if (options.SquelchEnabled)
                             {
@@ -240,6 +333,8 @@ namespace iRacing_Spotter_Generator.Services
                             {
                                 File.Copy(convertedWavPath, wavPath, overwrite: true);
                             }
+
+                            ApplyVolumeIfNeeded(options, wavPath);
                         }
                         finally
                         {
@@ -271,6 +366,7 @@ namespace iRacing_Spotter_Generator.Services
             manifest.Save(options.OutputFolder);
 
             var iniContent = SpmsgTemplateParser.Serialize(messages, options.RequiredMsgIds);
+
             var iniPath = Path.Combine(options.OutputFolder, "spmsg.txt");
             await File.WriteAllTextAsync(iniPath, iniContent, cancellationToken);
         }
@@ -350,6 +446,12 @@ namespace iRacing_Spotter_Generator.Services
             sb.Append(options.SquelchVolume).Append('|');
             sb.Append(message.AddSquelchStart).Append('|');
             sb.Append(message.AddSquelchEnd).Append('|');
+            sb.Append(message.AddRadioEffect).Append('|');
+            sb.Append(options.RadioEffectEnabled).Append('|');
+            sb.Append(options.RadioEffectLowCutHz).Append('|');
+            sb.Append(options.RadioEffectHighCutHz).Append('|');
+            sb.Append(options.RadioEffectDistortion).Append('|');
+            sb.Append(options.OutputVolume).Append('|');
 
             var bytes = Encoding.UTF8.GetBytes(sb.ToString());
             var hashBytes = SHA256.HashData(bytes);
@@ -360,6 +462,8 @@ namespace iRacing_Spotter_Generator.Services
             string text, string apiKey, string voiceName, string languageCode,
             int sampleRate = 5512, int bitsPerSample = 8,
             bool squelchEnabled = true, int squelchDurationMs = 150, double squelchVolume = 0.5,
+            bool radioEffectEnabled = false, int radioEffectLowCutHz = 300, int radioEffectHighCutHz = 3000,
+            double radioEffectDistortion = 0.2, double outputVolume = 1.0,
             CancellationToken cancellationToken = default)
         {
             var client = new GoogleTtsClient(apiKey);
@@ -374,6 +478,15 @@ namespace iRacing_Spotter_Generator.Services
             {
                 AudioFormatConverter.ConvertFile(rawTempPath, convertedTempPath, sampleRate, bitsPerSample);
 
+                if (radioEffectEnabled)
+                {
+                    var radioEffectTempPath = Path.Combine(Path.GetTempPath(), $"spgen_preview_radio_{Guid.NewGuid():N}.wav");
+                    RadioEffectProcessor.Apply(
+                        convertedTempPath, radioEffectTempPath, radioEffectLowCutHz, radioEffectHighCutHz, radioEffectDistortion);
+                    File.Copy(radioEffectTempPath, convertedTempPath, overwrite: true);
+                    File.Delete(radioEffectTempPath);
+                }
+
                 if (squelchEnabled)
                 {
                     SquelchEffectGenerator.ApplySquelch(convertedTempPath, tempPath, squelchDurationMs, squelchVolume);
@@ -381,6 +494,14 @@ namespace iRacing_Spotter_Generator.Services
                 else
                 {
                     File.Copy(convertedTempPath, tempPath, overwrite: true);
+                }
+
+                if (Math.Abs(outputVolume - 1.0) >= 0.0001)
+                {
+                    var volumeTempPath = Path.Combine(Path.GetTempPath(), $"spgen_preview_vol_{Guid.NewGuid():N}.wav");
+                    VolumeProcessor.Apply(tempPath, volumeTempPath, outputVolume);
+                    File.Copy(volumeTempPath, tempPath, overwrite: true);
+                    File.Delete(volumeTempPath);
                 }
 
                 using var player = new System.Media.SoundPlayer(tempPath);

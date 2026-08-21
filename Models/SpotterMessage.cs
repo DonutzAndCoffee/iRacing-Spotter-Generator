@@ -19,6 +19,7 @@ namespace iRacing_Spotter_Generator.Models
         private bool _isExported;
         private bool _addSquelchStart = true;
         private bool _addSquelchEnd = true;
+        private bool _addRadioEffect = true;
 
         /// <summary>
         /// Stable identifier for this row, used to keep a persistent per-row
@@ -120,6 +121,18 @@ namespace iRacing_Spotter_Generator.Models
         {
             get => _addSquelchEnd;
             set => SetField(ref _addSquelchEnd, value);
+        }
+
+        /// <summary>
+        /// Whether the flexible radio effect (bandpass filter + optional
+        /// distortion) should be applied to this message's audio, when the
+        /// effect is also enabled globally in the settings. Defaults to true
+        /// so existing behavior is unchanged unless explicitly opted out.
+        /// </summary>
+        public bool AddRadioEffect
+        {
+            get => _addRadioEffect;
+            set => SetField(ref _addRadioEffect, value);
         }
 
         /// <summary>

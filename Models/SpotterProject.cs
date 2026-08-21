@@ -82,5 +82,8 @@ namespace iRacing_Spotter_Generator.Models
         public bool IsComment { get; set; }
         public string RawLine { get; set; } = string.Empty;
         public RowStatus Status { get; set; } = RowStatus.ToDo;
+        public bool AddSquelchStart { get; set; } = true;
+        public bool AddSquelchEnd { get; set; } = true;
+        public bool AddRadioEffect { get; set; } = true;
     }
 }
