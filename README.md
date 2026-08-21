@@ -72,3 +72,10 @@ See [LICENSE.txt](LICENSE.txt) for license details.
 ## Contributing
 
 Issues and pull requests are welcome. Please open an issue to discuss significant changes before submitting a PR.
+
+---
+
+## 💬 Community & Support
+
+📢 Discord: [Join the Community](https://discord.gg/KuSsEYgB3k)
+☕ Support the project: [Buy me a coffee](https://paypal.me/donutz75)
