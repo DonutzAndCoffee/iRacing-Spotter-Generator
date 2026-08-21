@@ -28,6 +28,7 @@ A Windows desktop tool (WPF, .NET 10) for creating custom **spotter voice packs*
 - A Google Cloud API key with the **Text-to-Speech** and **Translation** APIs enabled (only required if you want to use TTS/translation instead of manual recordings)
 
 ## Getting Started
+Download and install the current release or follow the next steps if you want to build it yourself.
 
 1. Clone the repository:
    ```powershell
