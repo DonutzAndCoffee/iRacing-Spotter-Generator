@@ -1,0 +1,38 @@
+<Window x:Class="iRacing_Spotter_Generator.HelpWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        mc:Ignorable="d"
+        Title="{DynamicResource Str_HelpTitle}" Height="560" Width="620"
+        WindowStartupLocation="CenterOwner"
+        ShowInTaskbar="False">
+    <Grid Margin="15">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto">
+            <StackPanel>
+                <TextBlock Text="{DynamicResource Str_HelpUsageHeader}" FontWeight="Bold" FontSize="16" Margin="0,0,0,10" TextWrapping="Wrap"/>
+                <TextBlock Text="{DynamicResource Str_HelpUsageStep1}" TextWrapping="Wrap" Margin="0,0,0,6"/>
+                <TextBlock Text="{DynamicResource Str_HelpUsageStep2}" TextWrapping="Wrap" Margin="0,0,0,6"/>
+                <TextBlock Text="{DynamicResource Str_HelpUsageStep3}" TextWrapping="Wrap" Margin="0,0,0,6"/>
+                <TextBlock Text="{DynamicResource Str_HelpUsageStep4}" TextWrapping="Wrap" Margin="0,0,0,6"/>
+                <TextBlock Text="{DynamicResource Str_HelpUsageStep5}" TextWrapping="Wrap" Margin="0,0,0,16"/>
+
+                <TextBlock Text="{DynamicResource Str_HelpActivateHeader}" FontWeight="Bold" FontSize="16" Margin="0,0,0,10" TextWrapping="Wrap"/>
+                <TextBlock Text="{DynamicResource Str_HelpActivateStep1}" TextWrapping="Wrap" Margin="0,0,0,6"/>
+                <TextBlock Text="{DynamicResource Str_HelpActivateStep2}" TextWrapping="Wrap" Margin="0,0,0,6"/>
+                <TextBlock Text="{DynamicResource Str_HelpActivateStep3}" TextWrapping="Wrap" Margin="0,0,0,6"/>
+                <TextBlock Text="{DynamicResource Str_HelpActivateStep4}" TextWrapping="Wrap" Margin="0,0,0,6"/>
+                <TextBlock Text="{DynamicResource Str_HelpActivateStep5}" TextWrapping="Wrap" Margin="0,0,0,10"/>
+                <TextBlock Text="{DynamicResource Str_HelpActivateTip}" TextWrapping="Wrap" FontStyle="Italic" Margin="0,0,0,10"/>
+            </StackPanel>
+        </ScrollViewer>
+
+        <Button Grid.Row="1" Content="OK" IsDefault="True" IsCancel="True" HorizontalAlignment="Right"
+                Width="80" Padding="8,4" Margin="0,10,0,0" Click="OkButton_Click"/>
+    </Grid>
+</Window>

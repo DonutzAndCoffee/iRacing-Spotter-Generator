@@ -55,7 +55,21 @@ dotnet build "iRacing Spotter Generator.csproj"
    - Record/import your own audio via the **Takes** window.
 3. Optionally translate messages, adjust phrasing, and enable radio/squelch effects.
 4. Mark messages with a review status as you go.
-5. Export the project to generate the final pack folder, ready to be copied into your iRacing installation.
+5. Enter a pack name and click **Export** to generate the final pack folder (containing the generated WAV files plus a `spmsg.txt`/`spmsg.ini`), ready to be copied into your iRacing installation.
+
+## Activating a Spotter Pack in iRacing
+
+Once you've exported your pack, copy it into your iRacing documents folder so the sim can find it:
+
+1. Locate your iRacing documents folder, typically `Documents\iRacing\spotter\`. If the `spotter` folder doesn't exist yet, create it.
+2. Decide how the pack should apply:
+   - **All cars** – copy the exported pack folder directly into `Documents\iRacing\spotter\` (rename it to `default` or leave it as the pack name, depending on how you exported it, so its files sit alongside/inside that folder).
+   - **A specific car only** – create (or use) a subfolder named after the car's internal identifier, e.g. `Documents\iRacing\spotter\<carpath>\`, and place the exported WAV/`spmsg` files there. You can find a car's internal folder name in `Documents\iRacing\setups\<carpath>` or by checking the car's install folder under the iRacing content installation.
+3. Make sure the folder contains the generated `.wav` files together with `spmsg.txt` (or `spmsg.ini`) at the same level.
+4. Launch (or restart) iRacing and join a session – the sim automatically loads any matching spotter files it finds, replacing the default spotter voice for the messages you've provided (any messages you didn't generate fall back to the default spotter).
+5. Test your pack on track: trigger events like flags, other cars nearby, or pit-related calls to confirm your custom audio plays correctly.
+
+> Tip: keep a backup of your project `.json` file so you can reopen it later in the generator to tweak messages or add new ones without starting over.
 
 ## Project Structure
 

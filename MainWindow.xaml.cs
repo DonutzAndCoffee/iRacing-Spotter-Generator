@@ -41,6 +41,11 @@ namespace iRacing_Spotter_Generator
             var version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
             VersionTextBlock.Text = version is not null ? $"v{version.Major}.{version.Minor}.{version.Build}" : string.Empty;
 
+            if (version is not null)
+            {
+                _ = CheckForUpdateAsync(version);
+            }
+
             MessagesDataGrid.DataContext = _viewMessages;
 
             Closing += MainWindow_Closing;
@@ -99,6 +104,25 @@ namespace iRacing_Spotter_Generator
         {
             System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(e.Uri.AbsoluteUri) { UseShellExecute = true });
             e.Handled = true;
+        }
+
+        /// <summary>
+        /// Checks GitHub for a newer release than the one currently running
+        /// and, if found, shows a small clickable notice in the footer
+        /// linking to the release page.
+        /// </summary>
+        private async Task CheckForUpdateAsync(Version currentVersion)
+        {
+            var result = await UpdateCheckService.CheckForUpdateAsync(currentVersion);
+            if (result is null)
+            {
+                return;
+            }
+
+            var format = TryFindResource("Str_UpdateAvailableFormat") as string ?? "Update available: {0}";
+            UpdateAvailableRun.Text = string.Format(format, result.Tag);
+            UpdateAvailableHyperlink.NavigateUri = new Uri(result.Url);
+            UpdateAvailableTextBlock.Visibility = Visibility.Visible;
         }
 
         private void LoadTemplate()
@@ -729,6 +753,12 @@ namespace iRacing_Spotter_Generator
         {
             var licenseWindow = new LicenseWindow { Owner = this };
             licenseWindow.ShowDialog();
+        }
+
+        private void HelpButton_Click(object sender, RoutedEventArgs e)
+        {
+            var helpWindow = new HelpWindow { Owner = this };
+            helpWindow.ShowDialog();
         }
 
         private void ImportPackButton_Click(object sender, RoutedEventArgs e)

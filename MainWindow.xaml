@@ -42,8 +42,7 @@
         </Grid.RowDefinitions>
 
         <!-- Toolbar -->
-        <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Auto" Margin="0,0,0,10">
-        <StackPanel Orientation="Horizontal">
+        <WrapPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,10">
             <TextBlock Text="{DynamicResource Str_Filter}" VerticalAlignment="Center" Margin="0,0,5,0"/>
             <TextBox x:Name="FilterTextBox" Width="220" VerticalAlignment="Center"
                      TextChanged="FilterTextBox_TextChanged"/>
@@ -96,8 +95,8 @@
             <Border Style="{StaticResource ToolbarSeparatorStyle}"/>
 
             <Button Content="{DynamicResource Str_License}" Padding="8,2" Click="LicenseButton_Click"/>
-        </StackPanel>
-        </ScrollViewer>
+            <Button Content="{DynamicResource Str_Help}" Padding="8,2" Margin="5,0,0,0" Click="HelpButton_Click"/>
+        </WrapPanel>
 
         <!-- Inline settings panel -->
         <Border Grid.Row="1" BorderBrush="Gray" BorderThickness="1" Padding="10" Margin="0,0,0,10"
@@ -381,6 +380,17 @@
                 <Image Source="Assets/AppIcon.png" Width="64" Height="64" HorizontalAlignment="Right"/>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,2,0,0">
                     <TextBlock x:Name="VersionTextBlock" VerticalAlignment="Center" Foreground="Gray"/>
+                    <TextBlock x:Name="UpdateAvailableTextBlock" VerticalAlignment="Center" Margin="6,0,0,0"
+                               Foreground="OrangeRed" FontWeight="Bold" Visibility="Collapsed">
+                        <Hyperlink x:Name="UpdateAvailableHyperlink" RequestNavigate="Hyperlink_RequestNavigate">
+                            <Run x:Name="UpdateAvailableRun"/>
+                        </Hyperlink>
+                    </TextBlock>
+                    <TextBlock VerticalAlignment="Center" Margin="6,0,0,0">
+                        <Hyperlink NavigateUri="https://github.com/DonutzAndCoffee/iRacing-Spotter-Generator" RequestNavigate="Hyperlink_RequestNavigate">
+                            GitHub
+                        </Hyperlink>
+                    </TextBlock>
                     <TextBlock VerticalAlignment="Center" Margin="6,0,0,0">
                         <Hyperlink NavigateUri="https://discord.com/invite/KuSsEYgB3k" RequestNavigate="Hyperlink_RequestNavigate">
                             Discord

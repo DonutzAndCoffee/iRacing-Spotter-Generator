@@ -19,6 +19,22 @@
     <sys:String x:Key="Str_LicenseNoWarranty">No Warranty: This software is provided "as is," without warranty of any kind, express or implied. The author assumes no liability for any damages, data loss, or issues arising from the use of this tool.</sys:String>
     <sys:String x:Key="Str_LicenseUsage">Usage: You are free to use this software for personal, non-commercial purposes. Redistribution of the compiled application is permitted, provided this notice remains intact. Modification or redistribution of the source code requires the author's permission.</sys:String>
     <sys:String x:Key="Str_LicenseGeneratedContent">Generated Content: Voice packs created using this tool (including any AI-generated audio) are the responsibility of the user. Ensure any third-party voice generation services used comply with their own terms of service.</sys:String>
+    <sys:String x:Key="Str_UpdateAvailableFormat">Update available: {0}</sys:String>
+    <sys:String x:Key="Str_Help">Help</sys:String>
+    <sys:String x:Key="Str_HelpTitle">Quick Guide</sys:String>
+    <sys:String x:Key="Str_HelpUsageHeader">Using the App</sys:String>
+    <sys:String x:Key="Str_HelpUsageStep1">1. Create a new project or import an existing spotter pack (spmsg.ini/spmsg.txt).</sys:String>
+    <sys:String x:Key="Str_HelpUsageStep2">2. For each spotter message, enter the text and choose an audio source: select a Google TTS voice, or record/import your own audio via the Takes window.</sys:String>
+    <sys:String x:Key="Str_HelpUsageStep3">3. Optionally translate messages, adjust phrasing, and enable radio/squelch effects.</sys:String>
+    <sys:String x:Key="Str_HelpUsageStep4">4. Mark messages with a review status as you go.</sys:String>
+    <sys:String x:Key="Str_HelpUsageStep5">5. Enter a pack name and click Export to generate the final pack folder (containing the generated WAV files plus a spmsg.txt/spmsg.ini), ready to be copied into your iRacing installation.</sys:String>
+    <sys:String x:Key="Str_HelpActivateHeader">Activating a Spotter Pack in iRacing</sys:String>
+    <sys:String x:Key="Str_HelpActivateStep1">1. Locate your iRacing documents folder, typically Documents\iRacing\spotter\. If the spotter folder doesn't exist yet, create it.</sys:String>
+    <sys:String x:Key="Str_HelpActivateStep2">2. For all cars: copy the exported pack folder directly into Documents\iRacing\spotter\.</sys:String>
+    <sys:String x:Key="Str_HelpActivateStep3">3. For a specific car only: create (or use) a subfolder named after the car's internal identifier, e.g. Documents\iRacing\spotter\&lt;carpath&gt;\, and place the exported WAV/spmsg files there.</sys:String>
+    <sys:String x:Key="Str_HelpActivateStep4">4. Make sure the folder contains the generated .wav files together with spmsg.txt (or spmsg.ini) at the same level.</sys:String>
+    <sys:String x:Key="Str_HelpActivateStep5">5. Launch (or restart) iRacing and join a session - the sim automatically loads any matching spotter files it finds, replacing the default spotter voice for the messages you've provided (any messages you didn't generate fall back to the default spotter).</sys:String>
+    <sys:String x:Key="Str_HelpActivateTip">Tip: keep a backup of your project .json file so you can reopen it later in the generator to tweak messages or add new ones without starting over.</sys:String>
 
     <!-- Inline settings panel -->
     <sys:String x:Key="Str_GoogleApiKeyHeader">Google Cloud Text-to-Speech API Key</sys:String>
