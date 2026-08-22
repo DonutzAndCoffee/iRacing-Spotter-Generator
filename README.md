@@ -18,9 +18,9 @@ A Windows desktop tool (WPF, .NET 10) for creating custom **spotter voice packs*
   - Radio bandpass filter with optional soft-clip distortion, to emulate a race radio.
   - Squelch burst effect at the start/end of a message.
   - Per-message toggles for all effects.
-- **iRacing-ready output** – automatically downsamples audio to the format iRacing expects and writes a `spmsg.txt`/`spmsg.ini` file alongside the generated WAV files.
+- **iRacing-ready output** – automatically downsamples audio to the format iRacing expects and writes a `spmsg.txt` file alongside the generated WAV files.
 - **Incremental exports** – only regenerates audio files that actually changed since the last export.
-- **Import existing packs** – load an existing `spmsg.ini`/`spmsg.txt` pack to review, edit, or extend it.
+- **Import existing packs** – load an existing `spmsg.txt` pack to review, edit, or extend it.
 - **Review workflow** – track each message's status (To Do, Satisfactory, Rework Needed, Done).
 - **Localized UI** – available in English and German.
 
@@ -49,25 +49,23 @@ dotnet build "iRacing Spotter Generator.csproj"
 
 ## Usage
 
-1. Create a new project or import an existing spotter pack (`spmsg.ini`/`spmsg.txt`).
+1. Create a new project or import an existing spotter pack (`spmsg.txt`).
 2. For each spotter message, enter the text and choose an audio source:
    - Select a Google TTS voice, or
    - Record/import your own audio via the **Takes** window.
 3. Optionally translate messages, adjust phrasing, and enable radio/squelch effects.
 4. Mark messages with a review status as you go.
-5. Enter a pack name and click **Export** to generate the final pack folder (containing the generated WAV files plus a `spmsg.txt`/`spmsg.ini`), ready to be copied into your iRacing installation.
+5. Enter a pack name and click **Export** to generate the final pack folder (containing the generated WAV files plus a `spmsg.txt`), ready to be copied into your iRacing installation.
 
 ## Activating a Spotter Pack in iRacing
 
-Once you've exported your pack, copy it into your iRacing documents folder so the sim can find it:
+Once you've exported your pack, copy it into your iRacing sound folder and select it in-game:
 
-1. Locate your iRacing documents folder, typically `Documents\iRacing\spotter\`. If the `spotter` folder doesn't exist yet, create it.
-2. Decide how the pack should apply:
-   - **All cars** – copy the exported pack folder directly into `Documents\iRacing\spotter\` (rename it to `default` or leave it as the pack name, depending on how you exported it, so its files sit alongside/inside that folder).
-   - **A specific car only** – create (or use) a subfolder named after the car's internal identifier, e.g. `Documents\iRacing\spotter\<carpath>\`, and place the exported WAV/`spmsg` files there. You can find a car's internal folder name in `Documents\iRacing\setups\<carpath>` or by checking the car's install folder under the iRacing content installation.
-3. Make sure the folder contains the generated `.wav` files together with `spmsg.txt` (or `spmsg.ini`) at the same level.
-4. Launch (or restart) iRacing and join a session – the sim automatically loads any matching spotter files it finds, replacing the default spotter voice for the messages you've provided (any messages you didn't generate fall back to the default spotter).
-5. Test your pack on track: trigger events like flags, other cars nearby, or pit-related calls to confirm your custom audio plays correctly.
+1. Locate your iRacing installation folder (e.g. `C:\iRacing`) and its `sound\spcc\` subfolder. This folder already exists by default.
+2. Copy the exported pack folder entirely into that `sound\spcc\` folder of your iRacing installation.
+3. Make sure the folder contains the generated `.wav` files together with `spmsg.txt`.
+4. In iRacing, open the audio settings and select your new pack under **AI Spotter Options - Voice Pack**.
+5. Restart iRacing so the selected voice pack is loaded.
 
 > Tip: keep a backup of your project `.json` file so you can reopen it later in the generator to tweak messages or add new ones without starting over.
 

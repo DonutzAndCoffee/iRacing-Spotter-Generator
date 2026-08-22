@@ -23,17 +23,17 @@
     <sys:String x:Key="Str_Help">Hilfe</sys:String>
     <sys:String x:Key="Str_HelpTitle">Kurzanleitung</sys:String>
     <sys:String x:Key="Str_HelpUsageHeader">Verwendung der App</sys:String>
-    <sys:String x:Key="Str_HelpUsageStep1">1. Erstelle ein neues Projekt oder importiere ein bestehendes Spotter-Pack (spmsg.ini/spmsg.txt).</sys:String>
+    <sys:String x:Key="Str_HelpUsageStep1">1. Erstelle ein neues Projekt oder importiere ein bestehendes Spotter-Pack (spmsg.txt).</sys:String>
     <sys:String x:Key="Str_HelpUsageStep2">2. Gib für jede Spotter-Nachricht den Text ein und wähle eine Audioquelle: eine Google-TTS-Stimme oder eine eigene Aufnahme/importierte Datei über das Takes-Fenster.</sys:String>
     <sys:String x:Key="Str_HelpUsageStep3">3. Übersetze Nachrichten optional, passe die Formulierung an und aktiviere Funk-/Rauscheffekte.</sys:String>
     <sys:String x:Key="Str_HelpUsageStep4">4. Markiere Nachrichten nach und nach mit einem Bearbeitungsstatus.</sys:String>
-    <sys:String x:Key="Str_HelpUsageStep5">5. Gib einen Pack-Namen ein und klicke auf Export, um den fertigen Pack-Ordner zu erzeugen (mit den generierten Wav-Dateien sowie spmsg.txt/spmsg.ini), bereit zum Kopieren in deine iRacing-Installation.</sys:String>
+    <sys:String x:Key="Str_HelpUsageStep5">5. Gib einen Pack-Namen ein und klicke auf Export, um den fertigen Pack-Ordner zu erzeugen (mit den generierten Wav-Dateien sowie spmsg.txt), bereit zum Kopieren in deine iRacing-Installation.</sys:String>
     <sys:String x:Key="Str_HelpActivateHeader">Spotter-Pack in iRacing aktivieren</sys:String>
-    <sys:String x:Key="Str_HelpActivateStep1">1. Suche deinen iRacing-Dokumentenordner, meist Documents\iRacing\spotter\. Falls der Ordner "spotter" noch nicht existiert, lege ihn an.</sys:String>
-    <sys:String x:Key="Str_HelpActivateStep2">2. Für alle Autos: kopiere den exportierten Pack-Ordner direkt nach Documents\iRacing\spotter\.</sys:String>
-    <sys:String x:Key="Str_HelpActivateStep3">3. Für ein bestimmtes Auto: lege einen Unterordner mit dem internen Bezeichner des Autos an, z. B. Documents\iRacing\spotter\&lt;carpath&gt;\, und platziere dort die exportierten Wav-/spmsg-Dateien.</sys:String>
-    <sys:String x:Key="Str_HelpActivateStep4">4. Stelle sicher, dass der Ordner die generierten .wav-Dateien zusammen mit spmsg.txt (oder spmsg.ini) auf derselben Ebene enthält.</sys:String>
-    <sys:String x:Key="Str_HelpActivateStep5">5. Starte iRacing (neu) und tritt einer Session bei - der Sim lädt automatisch alle passenden Spotter-Dateien und ersetzt damit die Standard-Spotter-Stimme für die von dir erstellten Nachrichten (nicht generierte Nachrichten nutzen weiterhin den Standard-Spotter).</sys:String>
+    <sys:String x:Key="Str_HelpActivateStep1">1. Suche deinen iRacing-Installationsordner (z. B. C:\iRacing) und darin den Unterordner sound\spcc\. Dieser ist standardmäßig bereits vorhanden.</sys:String>
+    <sys:String x:Key="Str_HelpActivateStep2">2. Kopiere den exportierten Pack-Ordner komplett in diesen sound\spcc\-Ordner deiner iRacing-Installation.</sys:String>
+    <sys:String x:Key="Str_HelpActivateStep3">3. Stelle sicher, dass der Ordner die generierten .wav-Dateien zusammen mit spmsg.txt enthält.</sys:String>
+    <sys:String x:Key="Str_HelpActivateStep4">4. Öffne in iRacing die Audioeinstellungen und wähle unter "AI Spotter Options - Voice Pack" dein neues Pack aus.</sys:String>
+    <sys:String x:Key="Str_HelpActivateStep5">5. Starte iRacing neu, damit das ausgewählte Voice Pack geladen wird.</sys:String>
     <sys:String x:Key="Str_HelpActivateTip">Tipp: Bewahre eine Sicherung deiner Projekt-.json-Datei auf, damit du sie später im Generator wieder öffnen und Nachrichten anpassen oder ergänzen kannst, ohne von vorne zu beginnen.</sys:String>
 
     <!-- Inline settings panel -->
