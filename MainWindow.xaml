@@ -43,12 +43,6 @@
 
         <!-- Toolbar -->
         <WrapPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,10">
-            <TextBlock Text="{DynamicResource Str_Filter}" VerticalAlignment="Center" Margin="0,0,5,0"/>
-            <TextBox x:Name="FilterTextBox" Width="220" VerticalAlignment="Center"
-                     TextChanged="FilterTextBox_TextChanged"/>
-
-            <Border Style="{StaticResource ToolbarSeparatorStyle}"/>
-
             <Button Content="{DynamicResource Str_NewProject}" Padding="8,2" Click="NewProjectButton_Click"/>
             <Button Content="{DynamicResource Str_OpenProject}" Margin="10,0,0,0" Padding="8,2" Click="OpenProjectButton_Click"/>
             <Button Content="{DynamicResource Str_SaveProject}" Margin="10,0,0,0" Padding="8,2" Click="SaveProjectButton_Click"/>
@@ -146,10 +140,41 @@
                     <TextBlock Text="{DynamicResource Str_SquelchDurationLabel}" VerticalAlignment="Center" Margin="0,0,5,0"/>
                     <TextBox x:Name="SquelchDurationTextBox" Width="60" VerticalAlignment="Center" Margin="0,0,20,0"/>
                     <TextBlock Text="{DynamicResource Str_SquelchVolumeLabel}" VerticalAlignment="Center" Margin="0,0,5,0"/>
-                    <TextBox x:Name="SquelchVolumeTextBox" Width="60" VerticalAlignment="Center"/>
+                    <TextBox x:Name="SquelchVolumeTextBox" Width="60" VerticalAlignment="Center" Margin="0,0,20,0"/>
+                    <Button Content="{DynamicResource Str_Test}" Padding="8,2" Click="SquelchTestButton_Click"/>
                 </StackPanel>
                 <TextBlock TextWrapping="Wrap" Foreground="Gray" Margin="0,5,0,10"
                            Text="{DynamicResource Str_SquelchHint}"/>
+
+                <TextBlock Text="{DynamicResource Str_PttHeader}" FontWeight="Bold" Margin="0,15,0,5"/>
+                <StackPanel Orientation="Horizontal">
+                    <CheckBox x:Name="PttEnabledCheckBox" Content="{DynamicResource Str_PttAutoAdd}" VerticalAlignment="Center" Margin="0,0,20,0"/>
+                    <TextBlock Text="{DynamicResource Str_PttDurationLabel}" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                    <TextBox x:Name="PttDurationTextBox" Width="60" VerticalAlignment="Center" Margin="0,0,20,0"/>
+                    <TextBlock Text="{DynamicResource Str_PttVolumeLabel}" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                    <TextBox x:Name="PttVolumeTextBox" Width="60" VerticalAlignment="Center" Margin="0,0,20,0"/>
+                    <Button Content="{DynamicResource Str_Test}" Padding="8,2" Click="PttTestButton_Click"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                    <TextBlock Text="{DynamicResource Str_PttStartFrequencyLabel}" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                    <TextBox x:Name="PttStartFrequencyTextBox" Width="60" VerticalAlignment="Center" Margin="0,0,20,0"/>
+                    <TextBlock Text="{DynamicResource Str_PttEndFrequencyLabel}" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                    <TextBox x:Name="PttEndFrequencyTextBox" Width="60" VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                    <TextBlock Text="{DynamicResource Str_PttStartFileLabel}" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                    <TextBox x:Name="PttStartFileTextBox" Width="250" VerticalAlignment="Center" IsReadOnly="True"/>
+                    <Button Content="{DynamicResource Str_Browse}" Margin="5,0,5,0" Padding="8,2" Click="PttStartFileBrowseButton_Click"/>
+                    <Button Content="{DynamicResource Str_Clear}" Padding="8,2" Click="PttStartFileClearButton_Click"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                    <TextBlock Text="{DynamicResource Str_PttEndFileLabel}" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                    <TextBox x:Name="PttEndFileTextBox" Width="250" VerticalAlignment="Center" IsReadOnly="True"/>
+                    <Button Content="{DynamicResource Str_Browse}" Margin="5,0,5,0" Padding="8,2" Click="PttEndFileBrowseButton_Click"/>
+                    <Button Content="{DynamicResource Str_Clear}" Padding="8,2" Click="PttEndFileClearButton_Click"/>
+                </StackPanel>
+                <TextBlock TextWrapping="Wrap" Foreground="Gray" Margin="0,5,0,10"
+                           Text="{DynamicResource Str_PttHint}"/>
 
                 <TextBlock Text="{DynamicResource Str_RadioEffectHeader}" FontWeight="Bold" Margin="0,15,0,5"/>
                 <StackPanel Orientation="Horizontal">
@@ -159,7 +184,8 @@
                     <TextBlock Text="{DynamicResource Str_RadioEffectHighCutLabel}" VerticalAlignment="Center" Margin="0,0,5,0"/>
                     <TextBox x:Name="RadioEffectHighCutTextBox" Width="60" VerticalAlignment="Center" Margin="0,0,20,0"/>
                     <TextBlock Text="{DynamicResource Str_RadioEffectDistortionLabel}" VerticalAlignment="Center" Margin="0,0,5,0"/>
-                    <TextBox x:Name="RadioEffectDistortionTextBox" Width="60" VerticalAlignment="Center"/>
+                    <TextBox x:Name="RadioEffectDistortionTextBox" Width="60" VerticalAlignment="Center" Margin="0,0,20,0"/>
+                    <Button Content="{DynamicResource Str_Test}" Padding="8,2" Click="RadioEffectTestButton_Click"/>
                 </StackPanel>
                 <TextBlock TextWrapping="Wrap" Foreground="Gray" Margin="0,5,0,10"
                            Text="{DynamicResource Str_RadioEffectHint}"/>
@@ -167,13 +193,26 @@
                 <TextBlock Text="{DynamicResource Str_OutputVolumeHeader}" FontWeight="Bold" Margin="0,15,0,5"/>
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Text="{DynamicResource Str_OutputVolumeLabel}" VerticalAlignment="Center" Margin="0,0,5,0"/>
-                    <TextBox x:Name="OutputVolumeTextBox" Width="60" VerticalAlignment="Center"/>
+                    <TextBox x:Name="OutputVolumeTextBox" Width="60" VerticalAlignment="Center" Margin="0,0,20,0"/>
+                    <Button Content="{DynamicResource Str_Test}" Padding="8,2" Click="OutputVolumeTestButton_Click"/>
                 </StackPanel>
                 <TextBlock TextWrapping="Wrap" Foreground="Gray" Margin="0,5,0,10"
                            Text="{DynamicResource Str_OutputVolumeHint}"/>
 
+                <TextBlock TextWrapping="Wrap" Foreground="Gray" Margin="0,0,0,5"
+                           Text="{DynamicResource Str_TestHint}"/>
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                    <TextBlock Text="{DynamicResource Str_TestRecordingLabel}" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                    <TextBox x:Name="TestRecordingTextBox" Width="220" IsReadOnly="True" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                    <Button x:Name="TestRecordButton" Content="{DynamicResource Str_StartRecording}" Padding="8,2" Margin="0,0,5,0" Click="TestRecordButton_Click"/>
+                    <Button Content="{DynamicResource Str_Browse}" Padding="8,2" Margin="0,0,5,0" Click="TestRecordingBrowseButton_Click"/>
+                    <Button Content="{DynamicResource Str_Clear}" Padding="8,2" Click="TestRecordingClearButton_Click"/>
+                </StackPanel>
+                <TextBlock TextWrapping="Wrap" Foreground="Gray" Margin="0,0,0,10"
+                           Text="{DynamicResource Str_TestRecordingHint}"/>
                 <StackPanel Orientation="Horizontal">
-                    <Button Content="{DynamicResource Str_SaveSettings}" Padding="8,4" Click="SaveSettingsButton_Click" FontWeight="Bold"/>
+                    <Button Content="{DynamicResource Str_SaveSettings}" Padding="8,4" Click="SaveSettingsButton_Click" FontWeight="Bold" Margin="0,0,10,0"/>
+                    <Button Content="{DynamicResource Str_TestAll}" Padding="8,4" Click="TestAllButton_Click"/>
                 </StackPanel>
             </StackPanel>
         </Border>
@@ -192,13 +231,24 @@
             <Button Content="{DynamicResource Str_UncheckAll}" Tag="AddSquelchEnd:False" Click="BulkToggleColumnButton_Click" Padding="6,2" Margin="0,0,15,0"/>
             <TextBlock Text="{DynamicResource Str_ColumnRadioEffectTooltip}" VerticalAlignment="Center" Margin="0,0,4,0"/>
             <Button Content="{DynamicResource Str_CheckAll}" Tag="AddRadioEffect:True" Click="BulkToggleColumnButton_Click" Padding="6,2" Margin="0,0,2,0"/>
-            <Button Content="{DynamicResource Str_UncheckAll}" Tag="AddRadioEffect:False" Click="BulkToggleColumnButton_Click" Padding="6,2"/>
+            <Button Content="{DynamicResource Str_UncheckAll}" Tag="AddRadioEffect:False" Click="BulkToggleColumnButton_Click" Padding="6,2" Margin="0,0,15,0"/>
+            <TextBlock Text="{DynamicResource Str_ColumnPttStartTooltip}" VerticalAlignment="Center" Margin="0,0,4,0"/>
+            <Button Content="{DynamicResource Str_CheckAll}" Tag="AddPttStart:True" Click="BulkToggleColumnButton_Click" Padding="6,2" Margin="0,0,2,0"/>
+            <Button Content="{DynamicResource Str_UncheckAll}" Tag="AddPttStart:False" Click="BulkToggleColumnButton_Click" Padding="6,2" Margin="0,0,15,0"/>
+            <TextBlock Text="{DynamicResource Str_ColumnPttEndTooltip}" VerticalAlignment="Center" Margin="0,0,4,0"/>
+            <Button Content="{DynamicResource Str_CheckAll}" Tag="AddPttEnd:True" Click="BulkToggleColumnButton_Click" Padding="6,2" Margin="0,0,2,0"/>
+            <Button Content="{DynamicResource Str_UncheckAll}" Tag="AddPttEnd:False" Click="BulkToggleColumnButton_Click" Padding="6,2"/>
         </StackPanel>
 
         <DataGrid x:Name="MessagesDataGrid" Grid.Row="4" AutoGenerateColumns="False"
                    CanUserAddRows="False" CanUserDeleteRows="False"
                    ItemsSource="{Binding}" SelectionMode="Extended"
                    PreviewMouseLeftButtonDown="MessagesDataGrid_PreviewMouseLeftButtonDown">
+            <DataGrid.ColumnHeaderStyle>
+                <Style TargetType="DataGridColumnHeader">
+                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                </Style>
+            </DataGrid.ColumnHeaderStyle>
             <DataGrid.Resources>
                 <ContextMenu x:Key="RowContextMenu">
                     <MenuItem Header="{DynamicResource Str_Duplicate}" Click="DuplicateMenuItem_Click"/>
@@ -219,12 +269,26 @@
             <DataGrid.RowStyle>
                 <Style TargetType="DataGridRow">
                     <Setter Property="ContextMenu" Value="{StaticResource RowContextMenu}"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding Enabled}" Value="False">
+                            <Setter Property="Foreground" Value="Gray"/>
+                            <Setter Property="Opacity" Value="0.6"/>
+                        </DataTrigger>
+                    </Style.Triggers>
                 </Style>
             </DataGrid.RowStyle>
             <DataGrid.Columns>
-                <DataGridCheckBoxColumn Width="40">
+                <DataGridCheckBoxColumn Width="55">
                     <DataGridCheckBoxColumn.Header>
-                        <TextBlock Text="{DynamicResource Str_ColumnOn}" ToolTip="{DynamicResource Str_ColumnOnTooltip}"/>
+                        <StackPanel>
+                            <TextBlock Text="{DynamicResource Str_ColumnOn}" ToolTip="{DynamicResource Str_ColumnOnTooltip}"/>
+                            <ComboBox x:Name="EnabledFilterComboBox" Margin="0,2,0,0" FontWeight="Normal"
+                                      SelectionChanged="EnabledFilterComboBox_SelectionChanged">
+                                <ComboBoxItem Content="{DynamicResource Str_FilterAll}" Tag="All" IsSelected="True"/>
+                                <ComboBoxItem Content="{DynamicResource Str_ColumnOn}" Tag="On"/>
+                                <ComboBoxItem Content="{DynamicResource Str_FilterOff}" Tag="Off"/>
+                            </ComboBox>
+                        </StackPanel>
                     </DataGridCheckBoxColumn.Header>
                     <DataGridCheckBoxColumn.Binding>
                         <Binding Path="Enabled" UpdateSourceTrigger="PropertyChanged"/>
@@ -232,7 +296,12 @@
                 </DataGridCheckBoxColumn>
                 <DataGridTextColumn IsReadOnly="True" Width="200">
                     <DataGridTextColumn.Header>
-                        <TextBlock Text="{DynamicResource Str_ColumnMessageId}" ToolTip="{DynamicResource Str_ColumnMessageIdTooltip}"/>
+                        <StackPanel>
+                            <TextBlock Text="{DynamicResource Str_ColumnMessageId}" ToolTip="{DynamicResource Str_ColumnMessageIdTooltip}"/>
+                            <TextBox x:Name="FilterTextBox" Margin="0,2,0,0" FontWeight="Normal"
+                                     ToolTip="{DynamicResource Str_Filter}"
+                                     TextChanged="FilterTextBox_TextChanged"/>
+                        </StackPanel>
                     </DataGridTextColumn.Header>
                     <DataGridTextColumn.Binding>
                         <Binding Path="MsgId"/>
@@ -240,69 +309,144 @@
                 </DataGridTextColumn>
                 <DataGridTextColumn IsReadOnly="True" Width="150">
                     <DataGridTextColumn.Header>
-                        <TextBlock Text="{DynamicResource Str_ColumnWavFile}" ToolTip="{DynamicResource Str_ColumnWavFileTooltip}"/>
+                        <StackPanel>
+                            <TextBlock Text="{DynamicResource Str_ColumnWavFile}" ToolTip="{DynamicResource Str_ColumnWavFileTooltip}"/>
+                            <TextBox x:Name="WavFileFilterTextBox" Margin="0,2,0,0" FontWeight="Normal"
+                                     ToolTip="{DynamicResource Str_Filter}"
+                                     TextChanged="WavFileFilterTextBox_TextChanged"/>
+                        </StackPanel>
                     </DataGridTextColumn.Header>
                     <DataGridTextColumn.Binding>
                         <Binding Path="WavFileName"/>
                     </DataGridTextColumn.Binding>
                 </DataGridTextColumn>
-                <DataGridCheckBoxColumn IsReadOnly="True" Width="90">
+                <DataGridCheckBoxColumn IsReadOnly="True" Width="100">
                     <DataGridCheckBoxColumn.Header>
-                        <TextBlock Text="{DynamicResource Str_ColumnExported}" ToolTip="{DynamicResource Str_ColumnExportedTooltip}"/>
+                        <StackPanel>
+                            <TextBlock Text="{DynamicResource Str_ColumnExported}" ToolTip="{DynamicResource Str_ColumnExportedTooltip}"/>
+                            <ComboBox x:Name="ExportedFilterComboBox" Margin="0,2,0,0" FontWeight="Normal"
+                                      SelectionChanged="ExportedFilterComboBox_SelectionChanged">
+                                <ComboBoxItem Content="{DynamicResource Str_FilterAll}" Tag="All" IsSelected="True"/>
+                                <ComboBoxItem Content="{DynamicResource Str_FilterYes}" Tag="Yes"/>
+                                <ComboBoxItem Content="{DynamicResource Str_FilterNo}" Tag="No"/>
+                            </ComboBox>
+                        </StackPanel>
                     </DataGridCheckBoxColumn.Header>
                     <DataGridCheckBoxColumn.Binding>
                         <Binding Path="IsExported"/>
                     </DataGridCheckBoxColumn.Binding>
                 </DataGridCheckBoxColumn>
-                <DataGridComboBoxColumn Width="110"
+                <DataGridComboBoxColumn Width="130"
                                          ItemsSource="{Binding Source={StaticResource RowStatusValues}}"
                                          SelectedItemBinding="{Binding Status, UpdateSourceTrigger=PropertyChanged}">
                     <DataGridComboBoxColumn.Header>
-                        <TextBlock Text="{DynamicResource Str_ColumnStatus}" ToolTip="{DynamicResource Str_ColumnStatusTooltip}"/>
+                        <StackPanel>
+                            <TextBlock Text="{DynamicResource Str_ColumnStatus}" ToolTip="{DynamicResource Str_ColumnStatusTooltip}"/>
+                            <ComboBox x:Name="StatusFilterComboBox" Margin="0,2,0,0" FontWeight="Normal"
+                                      SelectionChanged="StatusFilterComboBox_SelectionChanged">
+                                <ComboBoxItem Content="{DynamicResource Str_FilterAll}" Tag="{x:Null}" IsSelected="True"/>
+                            </ComboBox>
+                        </StackPanel>
                     </DataGridComboBoxColumn.Header>
                 </DataGridComboBoxColumn>
-                <DataGridCheckBoxColumn Width="70">
+                <DataGridCheckBoxColumn Width="90">
                     <DataGridCheckBoxColumn.Header>
-                        <TextBlock Text="√Start" ToolTip="{DynamicResource Str_ColumnStartTooltip}"/>
+                        <StackPanel>
+                            <TextBlock Text="√Start" ToolTip="{DynamicResource Str_ColumnStartTooltip}"/>
+                            <ComboBox x:Name="StartFilterComboBox" Margin="0,2,0,0" FontWeight="Normal"
+                                      SelectionChanged="StartFilterComboBox_SelectionChanged">
+                                <ComboBoxItem Content="{DynamicResource Str_FilterAll}" Tag="All" IsSelected="True"/>
+                                <ComboBoxItem Content="{DynamicResource Str_FilterYes}" Tag="Yes"/>
+                                <ComboBoxItem Content="{DynamicResource Str_FilterNo}" Tag="No"/>
+                            </ComboBox>
+                        </StackPanel>
                     </DataGridCheckBoxColumn.Header>
                     <DataGridCheckBoxColumn.Binding>
                         <Binding Path="AddSquelchStart" UpdateSourceTrigger="PropertyChanged"/>
                     </DataGridCheckBoxColumn.Binding>
                 </DataGridCheckBoxColumn>
-                <DataGridCheckBoxColumn Width="70">
+                <DataGridCheckBoxColumn Width="90">
                     <DataGridCheckBoxColumn.Header>
-                        <TextBlock Text="√End" ToolTip="{DynamicResource Str_ColumnEndTooltip}"/>
+                        <StackPanel>
+                            <TextBlock Text="√End" ToolTip="{DynamicResource Str_ColumnEndTooltip}"/>
+                            <ComboBox x:Name="EndFilterComboBox" Margin="0,2,0,0" FontWeight="Normal"
+                                      SelectionChanged="EndFilterComboBox_SelectionChanged">
+                                <ComboBoxItem Content="{DynamicResource Str_FilterAll}" Tag="All" IsSelected="True"/>
+                                <ComboBoxItem Content="{DynamicResource Str_FilterYes}" Tag="Yes"/>
+                                <ComboBoxItem Content="{DynamicResource Str_FilterNo}" Tag="No"/>
+                            </ComboBox>
+                        </StackPanel>
                     </DataGridCheckBoxColumn.Header>
                     <DataGridCheckBoxColumn.Binding>
                         <Binding Path="AddSquelchEnd" UpdateSourceTrigger="PropertyChanged"/>
                     </DataGridCheckBoxColumn.Binding>
                 </DataGridCheckBoxColumn>
-                <DataGridCheckBoxColumn Width="90">
+                <DataGridCheckBoxColumn Width="110">
                     <DataGridCheckBoxColumn.Header>
-                        <TextBlock Text="{DynamicResource Str_ColumnRadioEffect}" ToolTip="{DynamicResource Str_ColumnRadioEffectTooltip}"/>
+                        <StackPanel>
+                            <TextBlock Text="{DynamicResource Str_ColumnRadioEffect}" ToolTip="{DynamicResource Str_ColumnRadioEffectTooltip}"/>
+                            <ComboBox x:Name="RadioEffectFilterComboBox" Margin="0,2,0,0" FontWeight="Normal"
+                                      SelectionChanged="RadioEffectFilterComboBox_SelectionChanged">
+                                <ComboBoxItem Content="{DynamicResource Str_FilterAll}" Tag="All" IsSelected="True"/>
+                                <ComboBoxItem Content="{DynamicResource Str_FilterYes}" Tag="Yes"/>
+                                <ComboBoxItem Content="{DynamicResource Str_FilterNo}" Tag="No"/>
+                            </ComboBox>
+                        </StackPanel>
                     </DataGridCheckBoxColumn.Header>
                     <DataGridCheckBoxColumn.Binding>
                         <Binding Path="AddRadioEffect" UpdateSourceTrigger="PropertyChanged"/>
                     </DataGridCheckBoxColumn.Binding>
                 </DataGridCheckBoxColumn>
+                <DataGridCheckBoxColumn Width="90">
+                    <DataGridCheckBoxColumn.Header>
+                        <TextBlock Text="{DynamicResource Str_ColumnPttStart}" ToolTip="{DynamicResource Str_ColumnPttStartTooltip}"/>
+                    </DataGridCheckBoxColumn.Header>
+                    <DataGridCheckBoxColumn.Binding>
+                        <Binding Path="AddPttStart" UpdateSourceTrigger="PropertyChanged"/>
+                    </DataGridCheckBoxColumn.Binding>
+                </DataGridCheckBoxColumn>
+                <DataGridCheckBoxColumn Width="90">
+                    <DataGridCheckBoxColumn.Header>
+                        <TextBlock Text="{DynamicResource Str_ColumnPttEnd}" ToolTip="{DynamicResource Str_ColumnPttEndTooltip}"/>
+                    </DataGridCheckBoxColumn.Header>
+                    <DataGridCheckBoxColumn.Binding>
+                        <Binding Path="AddPttEnd" UpdateSourceTrigger="PropertyChanged"/>
+                    </DataGridCheckBoxColumn.Binding>
+                </DataGridCheckBoxColumn>
                 <DataGridTextColumn Width="*">
                     <DataGridTextColumn.Header>
-                        <TextBlock Text="{DynamicResource Str_ColumnText}" ToolTip="{DynamicResource Str_ColumnTextTooltip}"/>
+                        <StackPanel>
+                            <TextBlock Text="{DynamicResource Str_ColumnText}" ToolTip="{DynamicResource Str_ColumnTextTooltip}"/>
+                            <TextBox x:Name="TextFilterTextBox" Margin="0,2,0,0" FontWeight="Normal"
+                                     ToolTip="{DynamicResource Str_Filter}"
+                                     TextChanged="TextFilterTextBox_TextChanged"/>
+                        </StackPanel>
                     </DataGridTextColumn.Header>
                     <DataGridTextColumn.Binding>
                         <Binding Path="Text" UpdateSourceTrigger="PropertyChanged"/>
                     </DataGridTextColumn.Binding>
                 </DataGridTextColumn>
-                <DataGridComboBoxColumn Width="110"
+                <DataGridComboBoxColumn Width="130"
                                          ItemsSource="{Binding Source={StaticResource SourceTypeValues}}"
                                          SelectedItemBinding="{Binding SourceType, UpdateSourceTrigger=PropertyChanged}">
                     <DataGridComboBoxColumn.Header>
-                        <TextBlock Text="{DynamicResource Str_ColumnSource}" ToolTip="{DynamicResource Str_ColumnSourceTooltip}"/>
+                        <StackPanel>
+                            <TextBlock Text="{DynamicResource Str_ColumnSource}" ToolTip="{DynamicResource Str_ColumnSourceTooltip}"/>
+                            <ComboBox x:Name="SourceFilterComboBox" Margin="0,2,0,0" FontWeight="Normal"
+                                      SelectionChanged="SourceFilterComboBox_SelectionChanged">
+                                <ComboBoxItem Content="{DynamicResource Str_FilterAll}" Tag="{x:Null}" IsSelected="True"/>
+                            </ComboBox>
+                        </StackPanel>
                     </DataGridComboBoxColumn.Header>
                 </DataGridComboBoxColumn>
                 <DataGridTemplateColumn Width="180">
                     <DataGridTemplateColumn.Header>
-                        <TextBlock Text="{DynamicResource Str_ColumnAiVoice}" ToolTip="{DynamicResource Str_ColumnAiVoiceTooltip}"/>
+                        <StackPanel>
+                            <TextBlock Text="{DynamicResource Str_ColumnAiVoice}" ToolTip="{DynamicResource Str_ColumnAiVoiceTooltip}"/>
+                            <TextBox x:Name="AiVoiceFilterTextBox" Margin="0,2,0,0" FontWeight="Normal"
+                                     ToolTip="{DynamicResource Str_Filter}"
+                                     TextChanged="AiVoiceFilterTextBox_TextChanged"/>
+                        </StackPanel>
                     </DataGridTemplateColumn.Header>
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>

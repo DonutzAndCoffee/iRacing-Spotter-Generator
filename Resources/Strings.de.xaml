@@ -4,6 +4,11 @@
 
     <!-- Toolbar -->
     <sys:String x:Key="Str_Filter">Filter:</sys:String>
+    <sys:String x:Key="Str_FilterOnOffLabel">An/Aus:</sys:String>
+    <sys:String x:Key="Str_FilterAll">Alle</sys:String>
+    <sys:String x:Key="Str_FilterOff">Aus</sys:String>
+    <sys:String x:Key="Str_FilterYes">Ja</sys:String>
+    <sys:String x:Key="Str_FilterNo">Nein</sys:String>
     <sys:String x:Key="Str_LoadGoogleVoices">Google-Stimmen laden</sys:String>
     <sys:String x:Key="Str_Settings">Einstellungen</sys:String>
     <sys:String x:Key="Str_SettingsToggleTooltip">Einstellungsbereich ein-/ausblenden</sys:String>
@@ -52,6 +57,20 @@
     <sys:String x:Key="Str_SquelchDurationLabel">Dauer (ms):</sys:String>
     <sys:String x:Key="Str_SquelchVolumeLabel">Lautstärke (0-1):</sys:String>
     <sys:String x:Key="Str_SquelchHint">Fügt am Anfang und Ende jeder generierten Datei ein kurzes Rausch-/Klickgeräusch hinzu, wie es typisch für Boxenfunk ist.</sys:String>
+    <sys:String x:Key="Str_PttHeader">Sprechfunk Start/Stopp-Signal (PTT)</sys:String>
+    <sys:String x:Key="Str_PttAutoAdd">Automatisch hinzufügen</sys:String>
+    <sys:String x:Key="Str_PttDurationLabel">Dauer (ms):</sys:String>
+    <sys:String x:Key="Str_PttVolumeLabel">Lautstärke (0-1):</sys:String>
+    <sys:String x:Key="Str_PttStartFrequencyLabel">Start-Ton (Hz):</sys:String>
+    <sys:String x:Key="Str_PttEndFrequencyLabel">Stopp-Ton (Hz):</sys:String>
+    <sys:String x:Key="Str_PttStartFileLabel">Eigene Start-Datei:</sys:String>
+    <sys:String x:Key="Str_PttEndFileLabel">Eigene Stopp-Datei:</sys:String>
+    <sys:String x:Key="Str_PttHint">Fügt am Anfang und/oder Ende jeder generierten Datei eine kurze Tonfolge (zwei Pieptöne) hinzu, wie beim Drücken/Loslassen der Sprechtaste (PTT) eines echten Funkgeräts. Unabhängig vom Funkgeräusch oben aktivierbar. Optional können eigene WAV-Dateien anstelle der erzeugten Töne verwendet werden.</sys:String>
+    <sys:String x:Key="Str_Test">Testen</sys:String>
+    <sys:String x:Key="Str_TestAll">Alles zusammen testen</sys:String>
+    <sys:String x:Key="Str_TestHint">Spielt einen kurzen synthetischen Testton mit den aktuellen (noch ungespeicherten) Einstellungen ab, damit du Änderungen sofort hören kannst.</sys:String>
+    <sys:String x:Key="Str_TestRecordingLabel">Eigener Test-Take:</sys:String>
+    <sys:String x:Key="Str_TestRecordingHint">Optional: Sprich einen eigenen Test-Satz ein oder wähle eine vorhandene WAV-Datei aus. Ist ein Test-Take vorhanden, verwenden die Testen-Buttons diesen anstelle des synthetischen Testtons.</sys:String>
     <sys:String x:Key="Str_RadioEffectHeader">Funkgerät-Effekt (Bandpass/Verzerrung)</sys:String>
     <sys:String x:Key="Str_RadioEffectAutoAdd">Automatisch anwenden</sys:String>
     <sys:String x:Key="Str_RadioEffectLowCutLabel">Untere Grenze (Hz):</sys:String>
@@ -91,6 +110,10 @@
     <sys:String x:Key="Str_ColumnTextTooltip">Der zu sprechende Nachrichtentext</sys:String>
     <sys:String x:Key="Str_ColumnSourceTooltip">Quelle des Audios (z. B. Google KI, Aufnahme)</sys:String>
     <sys:String x:Key="Str_ColumnRadioEffectTooltip">Funkeffekt auf diese Nachricht anwenden, sofern in den Einstellungen aktiviert</sys:String>
+    <sys:String x:Key="Str_ColumnPttStart">PTT Start</sys:String>
+    <sys:String x:Key="Str_ColumnPttStartTooltip">PTT-Start-Ton zu dieser Nachricht hinzufügen, sofern in den Einstellungen aktiviert</sys:String>
+    <sys:String x:Key="Str_ColumnPttEnd">PTT Ende</sys:String>
+    <sys:String x:Key="Str_ColumnPttEndTooltip">PTT-Stopp-Ton zu dieser Nachricht hinzufügen, sofern in den Einstellungen aktiviert</sys:String>
     <sys:String x:Key="Str_BulkToggleLabel">Für alle Zeilen setzen:</sys:String>
     <sys:String x:Key="Str_CheckAll">Alle setzen</sys:String>
     <sys:String x:Key="Str_UncheckAll">Alle entfernen</sys:String>
@@ -103,6 +126,7 @@
     <sys:String x:Key="Str_PackNameLabel">Pack-Name:</sys:String>
     <sys:String x:Key="Str_DestinationFolderLabel">Zielordner:</sys:String>
     <sys:String x:Key="Str_Browse">Durchsuchen...</sys:String>
+    <sys:String x:Key="Str_Clear">Entfernen</sys:String>
 
     <!-- Generate -->
     <sys:String x:Key="Str_GeneratePack">Pack generieren</sys:String>

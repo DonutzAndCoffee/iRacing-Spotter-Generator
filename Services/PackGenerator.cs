@@ -106,6 +106,43 @@ namespace iRacing_Spotter_Generator.Services
         public double RadioEffectDistortion { get; set; } = 0.2;
 
         /// <summary>
+        /// Whether synthetic PTT (push-to-talk) start/stop beep tones are
+        /// automatically added to every generated sample, independently of
+        /// the squelch noise burst.
+        /// </summary>
+        public bool PttEnabled { get; set; } = false;
+
+        /// <summary>
+        /// Duration (in milliseconds) of each PTT beep.
+        /// </summary>
+        public int PttDurationMs { get; set; } = 200;
+
+        /// <summary>
+        /// Volume (0.0 - 1.0) of the PTT beeps.
+        /// </summary>
+        public double PttVolume { get; set; } = 0.5;
+
+        /// <summary>
+        /// Frequency (Hz) of the synthesized "start talking" beep.
+        /// </summary>
+        public int PttStartFrequencyHz { get; set; } = 1000;
+
+        /// <summary>
+        /// Frequency (Hz) of the synthesized "stop talking" beep.
+        /// </summary>
+        public int PttEndFrequencyHz { get; set; } = 800;
+
+        /// <summary>
+        /// Optional custom WAV file used instead of the synthesized start beep.
+        /// </summary>
+        public string? PttStartFilePath { get; set; }
+
+        /// <summary>
+        /// Optional custom WAV file used instead of the synthesized end beep.
+        /// </summary>
+        public string? PttEndFilePath { get; set; }
+
+        /// <summary>
         /// Output volume/gain applied to every generated sample (1.0 = unchanged).
         /// </summary>
         public double OutputVolume { get; set; } = 1.0;
@@ -169,6 +206,40 @@ namespace iRacing_Spotter_Generator.Services
                 catch (IOException)
                 {
                     // Ignore cleanup failures for temp radio-effect files.
+                }
+            }
+        }
+
+        /// <summary>
+        /// Applies PTT start/stop beeps to <paramref name="wavPath"/> in place,
+        /// if enabled in <paramref name="options"/>, independently of squelch.
+        /// </summary>
+        private static void ApplyPttIfEnabled(PackGenerationOptions options, SpotterMessage message, string wavPath)
+        {
+            if (!options.PttEnabled)
+            {
+                return;
+            }
+
+            var processedPath = Path.Combine(Path.GetTempPath(), $"spgen_ptt_{Guid.NewGuid():N}.wav");
+            try
+            {
+                PttEffectGenerator.ApplyPtt(
+                    wavPath, processedPath, options.PttDurationMs, options.PttVolume,
+                    options.PttStartFrequencyHz, options.PttEndFrequencyHz,
+                    message.AddPttStart, message.AddPttEnd,
+                    options.PttStartFilePath, options.PttEndFilePath);
+                File.Copy(processedPath, wavPath, overwrite: true);
+            }
+            finally
+            {
+                try
+                {
+                    File.Delete(processedPath);
+                }
+                catch (IOException)
+                {
+                    // Ignore cleanup failures for temp PTT-effect files.
                 }
             }
         }
@@ -277,6 +348,7 @@ namespace iRacing_Spotter_Generator.Services
                                 File.Copy(convertedRecordingPath, wavPath, overwrite: true);
                             }
 
+                            ApplyPttIfEnabled(options, message, wavPath);
                             ApplyVolumeIfNeeded(options, wavPath);
                         }
                         finally
@@ -334,6 +406,7 @@ namespace iRacing_Spotter_Generator.Services
                                 File.Copy(convertedWavPath, wavPath, overwrite: true);
                             }
 
+                            ApplyPttIfEnabled(options, message, wavPath);
                             ApplyVolumeIfNeeded(options, wavPath);
                         }
                         finally
@@ -451,6 +524,15 @@ namespace iRacing_Spotter_Generator.Services
             sb.Append(options.RadioEffectLowCutHz).Append('|');
             sb.Append(options.RadioEffectHighCutHz).Append('|');
             sb.Append(options.RadioEffectDistortion).Append('|');
+            sb.Append(message.AddPttStart).Append('|');
+            sb.Append(message.AddPttEnd).Append('|');
+            sb.Append(options.PttEnabled).Append('|');
+            sb.Append(options.PttDurationMs).Append('|');
+            sb.Append(options.PttVolume).Append('|');
+            sb.Append(options.PttStartFrequencyHz).Append('|');
+            sb.Append(options.PttEndFrequencyHz).Append('|');
+            sb.Append(options.PttStartFilePath).Append('|');
+            sb.Append(options.PttEndFilePath).Append('|');
             sb.Append(options.OutputVolume).Append('|');
 
             var bytes = Encoding.UTF8.GetBytes(sb.ToString());
@@ -464,6 +546,9 @@ namespace iRacing_Spotter_Generator.Services
             bool squelchEnabled = true, int squelchDurationMs = 150, double squelchVolume = 0.5,
             bool radioEffectEnabled = false, int radioEffectLowCutHz = 300, int radioEffectHighCutHz = 3000,
             double radioEffectDistortion = 0.2, double outputVolume = 1.0,
+            bool pttEnabled = false, int pttDurationMs = 200, double pttVolume = 0.5,
+            int pttStartFrequencyHz = 1000, int pttEndFrequencyHz = 800,
+            string? pttStartFilePath = null, string? pttEndFilePath = null,
             CancellationToken cancellationToken = default)
         {
             var client = new GoogleTtsClient(apiKey);
@@ -494,6 +579,16 @@ namespace iRacing_Spotter_Generator.Services
                 else
                 {
                     File.Copy(convertedTempPath, tempPath, overwrite: true);
+                }
+
+                if (pttEnabled)
+                {
+                    var pttTempPath = Path.Combine(Path.GetTempPath(), $"spgen_preview_ptt_{Guid.NewGuid():N}.wav");
+                    PttEffectGenerator.ApplyPtt(
+                        tempPath, pttTempPath, pttDurationMs, pttVolume,
+                        pttStartFrequencyHz, pttEndFrequencyHz, startFilePath: pttStartFilePath, endFilePath: pttEndFilePath);
+                    File.Copy(pttTempPath, tempPath, overwrite: true);
+                    File.Delete(pttTempPath);
                 }
 
                 if (Math.Abs(outputVolume - 1.0) >= 0.0001)

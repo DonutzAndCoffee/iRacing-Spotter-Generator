@@ -1,4 +1,5 @@
-﻿using System.Collections.ObjectModel;
+﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -32,6 +33,8 @@ namespace iRacing_Spotter_Generator
         /// </summary>
         private bool _isDirty;
 
+        private AudioRecorder? _testRecorder;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -48,6 +51,16 @@ namespace iRacing_Spotter_Generator
 
             MessagesDataGrid.DataContext = _viewMessages;
 
+            foreach (RowStatus status in Enum.GetValues(typeof(RowStatus)))
+            {
+                StatusFilterComboBox.Items.Add(new ComboBoxItem { Content = status.ToString(), Tag = status });
+            }
+
+            foreach (AudioSourceType sourceType in Enum.GetValues(typeof(AudioSourceType)))
+            {
+                SourceFilterComboBox.Items.Add(new ComboBoxItem { Content = sourceType.ToString(), Tag = sourceType });
+            }
+
             Closing += MainWindow_Closing;
 
             ApiKeyPasswordBox.Password = _settings.GoogleApiKey;
@@ -63,6 +76,14 @@ namespace iRacing_Spotter_Generator
             RadioEffectHighCutTextBox.Text = _settings.RadioEffectHighCutHz.ToString();
             RadioEffectDistortionTextBox.Text = _settings.RadioEffectDistortion.ToString(System.Globalization.CultureInfo.InvariantCulture);
             OutputVolumeTextBox.Text = _settings.OutputVolume.ToString(System.Globalization.CultureInfo.InvariantCulture);
+            PttEnabledCheckBox.IsChecked = _settings.PttEnabled;
+            PttDurationTextBox.Text = _settings.PttDurationMs.ToString();
+            PttVolumeTextBox.Text = _settings.PttVolume.ToString(System.Globalization.CultureInfo.InvariantCulture);
+            PttStartFrequencyTextBox.Text = _settings.PttStartFrequencyHz.ToString();
+            PttEndFrequencyTextBox.Text = _settings.PttEndFrequencyHz.ToString();
+            PttStartFileTextBox.Text = _settings.PttStartFilePath ?? string.Empty;
+            PttEndFileTextBox.Text = _settings.PttEndFilePath ?? string.Empty;
+            TestRecordingTextBox.Text = _settings.TestRecordingPath ?? string.Empty;
 
             foreach (ComboBoxItem item in LanguageComboBox.Items)
             {
@@ -150,7 +171,7 @@ namespace iRacing_Spotter_Generator
                 message.PropertyChanged += Message_PropertyChanged;
             }
 
-            RefreshView(string.Empty);
+            RefreshView();
             _isDirty = false;
         }
 
@@ -218,15 +239,102 @@ namespace iRacing_Spotter_Generator
             StatusTextBlock.Text = LocalizationManager.GetString("Str_NewProjectStarted");
         }
 
-        private void RefreshView(string filter)
+        /// <summary>
+        /// Returns the selected "Yes"/"No"/"All" tri-state tag of a bool-filter combo box,
+        /// or null if the control isn't constructed yet or "All" is selected.
+        /// </summary>
+        private static bool? GetTriStateFilterValue(ComboBox? comboBox)
+        {
+            if (comboBox?.SelectedItem is not ComboBoxItem { Tag: string tag })
+            {
+                return null;
+            }
+
+            if (string.Equals(tag, "Yes", StringComparison.OrdinalIgnoreCase))
+            {
+                return true;
+            }
+
+            if (string.Equals(tag, "No", StringComparison.OrdinalIgnoreCase))
+            {
+                return false;
+            }
+
+            return null;
+        }
+
+        private void RefreshView()
         {
             _viewMessages.Clear();
 
-            var query = string.IsNullOrWhiteSpace(filter)
-                ? _allMessages
-                : _allMessages.Where(m =>
-                    m.MsgId.Contains(filter, StringComparison.OrdinalIgnoreCase) ||
-                    m.Text.Contains(filter, StringComparison.OrdinalIgnoreCase));
+            IEnumerable<SpotterMessage> query = _allMessages;
+
+            var msgIdFilter = FilterTextBox?.Text;
+            if (!string.IsNullOrWhiteSpace(msgIdFilter))
+            {
+                query = query.Where(m => m.MsgId.Contains(msgIdFilter, StringComparison.OrdinalIgnoreCase));
+            }
+
+            var wavFileFilter = WavFileFilterTextBox?.Text;
+            if (!string.IsNullOrWhiteSpace(wavFileFilter))
+            {
+                query = query.Where(m => m.WavFileName.Contains(wavFileFilter, StringComparison.OrdinalIgnoreCase));
+            }
+
+            var textFilter = TextFilterTextBox?.Text;
+            if (!string.IsNullOrWhiteSpace(textFilter))
+            {
+                query = query.Where(m => m.Text.Contains(textFilter, StringComparison.OrdinalIgnoreCase));
+            }
+
+            var aiVoiceFilter = AiVoiceFilterTextBox?.Text;
+            if (!string.IsNullOrWhiteSpace(aiVoiceFilter))
+            {
+                query = query.Where(m => m.GoogleVoiceName is not null &&
+                    m.GoogleVoiceName.Contains(aiVoiceFilter, StringComparison.OrdinalIgnoreCase));
+            }
+
+            if (EnabledFilterComboBox?.SelectedItem is ComboBoxItem enabledItem && enabledItem.Tag is string enabledTag)
+            {
+                if (string.Equals(enabledTag, "On", StringComparison.OrdinalIgnoreCase))
+                {
+                    query = query.Where(m => m.Enabled);
+                }
+                else if (string.Equals(enabledTag, "Off", StringComparison.OrdinalIgnoreCase))
+                {
+                    query = query.Where(m => !m.Enabled);
+                }
+            }
+
+            if (GetTriStateFilterValue(ExportedFilterComboBox) is bool exportedFilter)
+            {
+                query = query.Where(m => m.IsExported == exportedFilter);
+            }
+
+            if (StatusFilterComboBox?.SelectedItem is ComboBoxItem statusItem && statusItem.Tag is RowStatus status)
+            {
+                query = query.Where(m => m.Status == status);
+            }
+
+            if (GetTriStateFilterValue(StartFilterComboBox) is bool startFilter)
+            {
+                query = query.Where(m => m.AddSquelchStart == startFilter);
+            }
+
+            if (GetTriStateFilterValue(EndFilterComboBox) is bool endFilter)
+            {
+                query = query.Where(m => m.AddSquelchEnd == endFilter);
+            }
+
+            if (GetTriStateFilterValue(RadioEffectFilterComboBox) is bool radioEffectFilter)
+            {
+                query = query.Where(m => m.AddRadioEffect == radioEffectFilter);
+            }
+
+            if (SourceFilterComboBox?.SelectedItem is ComboBoxItem sourceItem && sourceItem.Tag is AudioSourceType sourceType)
+            {
+                query = query.Where(m => m.SourceType == sourceType);
+            }
 
             foreach (var message in query)
             {
@@ -236,7 +344,57 @@ namespace iRacing_Spotter_Generator
 
         private void FilterTextBox_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
         {
-            RefreshView(FilterTextBox.Text);
+            RefreshView();
+        }
+
+        private void WavFileFilterTextBox_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
+        {
+            RefreshView();
+        }
+
+        private void TextFilterTextBox_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
+        {
+            RefreshView();
+        }
+
+        private void AiVoiceFilterTextBox_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
+        {
+            RefreshView();
+        }
+
+        private void EnabledFilterComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            RefreshView();
+        }
+
+        private void ExportedFilterComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            RefreshView();
+        }
+
+        private void StatusFilterComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            RefreshView();
+        }
+
+        private void StartFilterComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            RefreshView();
+        }
+
+        private void EndFilterComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            RefreshView();
+        }
+
+        private void RadioEffectFilterComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            RefreshView();
+        }
+
+        private void SourceFilterComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            RefreshView();
         }
 
         private void AddMessageButton_Click(object sender, RoutedEventArgs e)
@@ -250,7 +408,7 @@ namespace iRacing_Spotter_Generator
                 addWindow.CreatedMessage.PropertyChanged += Message_PropertyChanged;
                 _knownMsgIds.Add(addWindow.CreatedMessage.MsgId);
                 RenumberWavFileNames(addWindow.CreatedMessage.MsgId);
-                RefreshView(FilterTextBox.Text);
+                RefreshView();
                 MarkDirty();
             }
         }
@@ -312,7 +470,7 @@ namespace iRacing_Spotter_Generator
 
             duplicate.PropertyChanged += Message_PropertyChanged;
             RenumberWavFileNames(duplicate.MsgId);
-            RefreshView(FilterTextBox.Text);
+            RefreshView();
             MarkDirty();
         }
 
@@ -534,7 +692,21 @@ namespace iRacing_Spotter_Generator
 
         private void SaveSettingsButton_Click(object sender, RoutedEventArgs e)
         {
-            _settings = new AppSettings
+            _settings = BuildSettingsFromInputs();
+
+            AppSettingsService.Save(_settings);
+            _ = LoadGoogleVoicesAsync();
+        }
+
+        /// <summary>
+        /// Builds an <see cref="AppSettings"/> snapshot from the current state
+        /// of the settings panel's controls, without persisting it. Used both
+        /// by the Save button and by the various Test buttons, so testing
+        /// always reflects unsaved edits too.
+        /// </summary>
+        private AppSettings BuildSettingsFromInputs()
+        {
+            return new AppSettings
             {
                 GoogleApiKey = ApiKeyPasswordBox.Password.Trim(),
                 DefaultGoogleVoiceName = DefaultVoiceComboBox.SelectedValue as string ?? string.Empty,
@@ -554,11 +726,220 @@ namespace iRacing_Spotter_Generator
                 OutputVolume = double.TryParse(
                     OutputVolumeTextBox.Text, System.Globalization.NumberStyles.Float,
                     System.Globalization.CultureInfo.InvariantCulture, out var outputVolume) ? outputVolume : 1.0,
+                PttEnabled = PttEnabledCheckBox.IsChecked == true,
+                PttDurationMs = int.TryParse(PttDurationTextBox.Text, out var pttDurationMs) ? pttDurationMs : 200,
+                PttVolume = double.TryParse(
+                    PttVolumeTextBox.Text, System.Globalization.NumberStyles.Float,
+                    System.Globalization.CultureInfo.InvariantCulture, out var pttVolume) ? pttVolume : 0.5,
+                PttStartFrequencyHz = int.TryParse(PttStartFrequencyTextBox.Text, out var pttStartFreq) ? pttStartFreq : 1000,
+                PttEndFrequencyHz = int.TryParse(PttEndFrequencyTextBox.Text, out var pttEndFreq) ? pttEndFreq : 800,
+                PttStartFilePath = string.IsNullOrWhiteSpace(PttStartFileTextBox.Text) ? null : PttStartFileTextBox.Text,
+                PttEndFilePath = string.IsNullOrWhiteSpace(PttEndFileTextBox.Text) ? null : PttEndFileTextBox.Text,
+                TestRecordingPath = string.IsNullOrWhiteSpace(TestRecordingTextBox.Text) ? null : TestRecordingTextBox.Text,
                 Language = LocalizationManager.CurrentLanguage
             };
+        }
 
-            AppSettingsService.Save(_settings);
-            _ = LoadGoogleVoicesAsync();
+        /// <summary>
+        /// Generates a short synthetic test tone and plays it back after
+        /// applying the given effect stages, so settings changes can be
+        /// heard immediately without needing a real message/recording.
+        /// </summary>
+        private void PlayTestTone(
+            AppSettings settings,
+            bool applyRadioEffect, bool applySquelch, bool applyPtt, bool applyVolume)
+        {
+            try
+            {
+                var tonePath = Path.Combine(Path.GetTempPath(), $"iracing_test_tone_{Guid.NewGuid():N}.wav");
+                var processedPath = Path.Combine(Path.GetTempPath(), $"iracing_test_processed_{Guid.NewGuid():N}.wav");
+
+                if (!string.IsNullOrWhiteSpace(settings.TestRecordingPath) && File.Exists(settings.TestRecordingPath))
+                {
+                    AudioFormatConverter.ConvertFile(
+                        settings.TestRecordingPath, tonePath, settings.RecordingSampleRate, settings.RecordingBitsPerSample);
+                }
+                else
+                {
+                    TestToneGenerator.GenerateTestTone(tonePath, settings.RecordingSampleRate, settings.RecordingBitsPerSample);
+                }
+
+                var currentPath = tonePath;
+
+                Task.Run(() =>
+                {
+                    try
+                    {
+                        if (applyRadioEffect)
+                        {
+                            RadioEffectProcessor.Apply(
+                                currentPath, processedPath,
+                                settings.RadioEffectLowCutHz, settings.RadioEffectHighCutHz, settings.RadioEffectDistortion);
+                            File.Copy(processedPath, currentPath, overwrite: true);
+                        }
+
+                        if (applySquelch)
+                        {
+                            SquelchEffectGenerator.ApplySquelch(
+                                currentPath, processedPath, settings.SquelchDurationMs, settings.SquelchVolume);
+                            File.Copy(processedPath, currentPath, overwrite: true);
+                        }
+
+                        if (applyPtt)
+                        {
+                            PttEffectGenerator.ApplyPtt(
+                                currentPath, processedPath, settings.PttDurationMs, settings.PttVolume,
+                                settings.PttStartFrequencyHz, settings.PttEndFrequencyHz,
+                                true, true,
+                                settings.PttStartFilePath, settings.PttEndFilePath);
+                            File.Copy(processedPath, currentPath, overwrite: true);
+                        }
+
+                        if (applyVolume && Math.Abs(settings.OutputVolume - 1.0) >= 0.0001)
+                        {
+                            VolumeProcessor.Apply(currentPath, processedPath, settings.OutputVolume);
+                            File.Copy(processedPath, currentPath, overwrite: true);
+                        }
+
+                        using var player = new System.Media.SoundPlayer(currentPath);
+                        player.PlaySync();
+                    }
+                    finally
+                    {
+                        foreach (var tempFile in new[] { tonePath, processedPath })
+                        {
+                            try
+                            {
+                                File.Delete(tempFile);
+                            }
+                            catch (IOException)
+                            {
+                                // Ignore cleanup failures for temp test files.
+                            }
+                        }
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(this, $"{LocalizationManager.GetString("Str_GooglePreviewFailed")} {ex.Message}",
+                    LocalizationManager.GetString("Str_PreviewTitle"), MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void SquelchTestButton_Click(object sender, RoutedEventArgs e)
+        {
+            PlayTestTone(BuildSettingsFromInputs(), applyRadioEffect: false, applySquelch: true, applyPtt: false, applyVolume: false);
+        }
+
+        private void PttTestButton_Click(object sender, RoutedEventArgs e)
+        {
+            PlayTestTone(BuildSettingsFromInputs(), applyRadioEffect: false, applySquelch: false, applyPtt: true, applyVolume: false);
+        }
+
+        private void RadioEffectTestButton_Click(object sender, RoutedEventArgs e)
+        {
+            PlayTestTone(BuildSettingsFromInputs(), applyRadioEffect: true, applySquelch: false, applyPtt: false, applyVolume: false);
+        }
+
+        private void OutputVolumeTestButton_Click(object sender, RoutedEventArgs e)
+        {
+            PlayTestTone(BuildSettingsFromInputs(), applyRadioEffect: false, applySquelch: false, applyPtt: false, applyVolume: true);
+        }
+
+        private void TestAllButton_Click(object sender, RoutedEventArgs e)
+        {
+            var settings = BuildSettingsFromInputs();
+            PlayTestTone(
+                settings,
+                applyRadioEffect: settings.RadioEffectEnabled,
+                applySquelch: settings.SquelchEnabled,
+                applyPtt: settings.PttEnabled,
+                applyVolume: true);
+        }
+
+        private void PttStartFileBrowseButton_Click(object sender, RoutedEventArgs e)
+        {
+            var dialog = new OpenFileDialog { Filter = "WAV files (*.wav)|*.wav|All files (*.*)|*.*" };
+            if (dialog.ShowDialog(this) == true)
+            {
+                PttStartFileTextBox.Text = dialog.FileName;
+            }
+        }
+
+        private void PttStartFileClearButton_Click(object sender, RoutedEventArgs e)
+        {
+            PttStartFileTextBox.Text = string.Empty;
+        }
+
+        private void PttEndFileBrowseButton_Click(object sender, RoutedEventArgs e)
+        {
+            var dialog = new OpenFileDialog { Filter = "WAV files (*.wav)|*.wav|All files (*.*)|*.*" };
+            if (dialog.ShowDialog(this) == true)
+            {
+                PttEndFileTextBox.Text = dialog.FileName;
+            }
+        }
+
+        private void PttEndFileClearButton_Click(object sender, RoutedEventArgs e)
+        {
+            PttEndFileTextBox.Text = string.Empty;
+        }
+
+        /// <summary>
+        /// Starts/stops recording a custom test phrase used by the settings
+        /// panel's "Test" buttons instead of the synthetic test tone, so the
+        /// user can hear how settings affect their own voice, analogous to
+        /// recording a message "Take" in <see cref="TakesWindow"/>.
+        /// </summary>
+        private void TestRecordButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (_testRecorder is { IsRecording: true })
+            {
+                _testRecorder.Stop();
+                return;
+            }
+
+            var folder = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                "iRacingSpotterGenerator", "TestRecording");
+            Directory.CreateDirectory(folder);
+            var filePath = Path.Combine(folder, "test_recording.wav");
+
+            _testRecorder = new AudioRecorder();
+            _testRecorder.RecordingStopped += (_, _) =>
+            {
+                Dispatcher.Invoke(() =>
+                {
+                    TestRecordingTextBox.Text = filePath;
+                    TestRecordButton.Content = LocalizationManager.GetString("Str_StartRecording");
+                });
+            };
+
+            try
+            {
+                _testRecorder.Start(filePath);
+                TestRecordButton.Content = LocalizationManager.GetString("Str_StopRecording");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(this, string.Format(LocalizationManager.GetString("Str_RecordingStartFailed"), ex.Message),
+                    LocalizationManager.GetString("Str_PreviewTitle"), MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void TestRecordingBrowseButton_Click(object sender, RoutedEventArgs e)
+        {
+            var dialog = new OpenFileDialog { Filter = "WAV files (*.wav)|*.wav|All files (*.*)|*.*" };
+            if (dialog.ShowDialog(this) == true)
+            {
+                TestRecordingTextBox.Text = dialog.FileName;
+            }
+        }
+
+        private void TestRecordingClearButton_Click(object sender, RoutedEventArgs e)
+        {
+            TestRecordingTextBox.Text = string.Empty;
         }
 
         /// <summary>
@@ -605,6 +986,7 @@ namespace iRacing_Spotter_Generator
                         var convertedPath = Path.Combine(Path.GetTempPath(), $"iracing_preview_conv_{Guid.NewGuid():N}.wav");
                         var squelchedPath = Path.Combine(Path.GetTempPath(), $"iracing_preview_{Guid.NewGuid():N}.wav");
                         var volumePath = Path.Combine(Path.GetTempPath(), $"iracing_preview_vol_{Guid.NewGuid():N}.wav");
+                        var pttPath = Path.Combine(Path.GetTempPath(), $"iracing_preview_ptt_{Guid.NewGuid():N}.wav");
 
                         try
                         {
@@ -636,6 +1018,16 @@ namespace iRacing_Spotter_Generator
                                 playbackPath = convertedPath;
                             }
 
+                            if (_settings.PttEnabled)
+                            {
+                                PttEffectGenerator.ApplyPtt(
+                                    playbackPath, pttPath, _settings.PttDurationMs, _settings.PttVolume,
+                                    _settings.PttStartFrequencyHz, _settings.PttEndFrequencyHz,
+                                    message.AddPttStart, message.AddPttEnd,
+                                    _settings.PttStartFilePath, _settings.PttEndFilePath);
+                                playbackPath = pttPath;
+                            }
+
                             if (Math.Abs(outputVolume - 1.0) >= 0.0001)
                             {
                                 VolumeProcessor.Apply(playbackPath, volumePath, outputVolume);
@@ -647,7 +1039,7 @@ namespace iRacing_Spotter_Generator
                         }
                         finally
                         {
-                            foreach (var tempFile in new[] { convertedPath, squelchedPath, volumePath })
+                            foreach (var tempFile in new[] { convertedPath, squelchedPath, volumePath, pttPath })
                             {
                                 try
                                 {
@@ -695,7 +1087,11 @@ namespace iRacing_Spotter_Generator
                         _settings.RecordingSampleRate, _settings.RecordingBitsPerSample,
                         _settings.SquelchEnabled, _settings.SquelchDurationMs, _settings.SquelchVolume,
                         _settings.RadioEffectEnabled && message.AddRadioEffect, _settings.RadioEffectLowCutHz, _settings.RadioEffectHighCutHz,
-                        _settings.RadioEffectDistortion, _settings.OutputVolume);
+                        _settings.RadioEffectDistortion, _settings.OutputVolume,
+                        _settings.PttEnabled, _settings.PttDurationMs, _settings.PttVolume,
+                        _settings.PttStartFrequencyHz, _settings.PttEndFrequencyHz,
+                        message.AddPttStart ? _settings.PttStartFilePath : null,
+                        message.AddPttEnd ? _settings.PttEndFilePath : null);
                 }
                 catch (Exception ex)
                 {
@@ -800,7 +1196,7 @@ namespace iRacing_Spotter_Generator
                 var importedByMsgId = importedMessages
                     .Where(m => !m.IsComment)
                     .GroupBy(m => m.MsgId, StringComparer.OrdinalIgnoreCase)
-                    .ToDictionary(g => g.Key, g => g.First(), StringComparer.OrdinalIgnoreCase);
+                    .ToDictionary(g => g.Key, g => g.ToList(), StringComparer.OrdinalIgnoreCase);
 
                 foreach (var message in _allMessages)
                 {
@@ -811,13 +1207,29 @@ namespace iRacing_Spotter_Generator
                 PackNameTextBox.Text = string.Empty;
                 LoadTemplate();
 
+                // Multiple template rows can share the same MsgId (variants), and the
+                // imported pack can likewise contain multiple lines for that MsgId. Pair
+                // them up in order so each variant row gets its own imported line instead
+                // of every row collapsing onto the same (first) imported entry.
+                var nextImportedIndex = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+
                 var importedCount = 0;
                 foreach (var message in _allMessages)
                 {
-                    if (message.IsComment || !importedByMsgId.TryGetValue(message.MsgId, out var imported))
+                    if (message.IsComment || !importedByMsgId.TryGetValue(message.MsgId, out var importedList))
                     {
                         continue;
                     }
+
+                    var index = nextImportedIndex.TryGetValue(message.MsgId, out var i) ? i : 0;
+                    if (index >= importedList.Count)
+                    {
+                        // No more imported variants left for this MsgId; keep the default.
+                        continue;
+                    }
+
+                    nextImportedIndex[message.MsgId] = index + 1;
+                    var imported = importedList[index];
 
                     message.Enabled = imported.Enabled;
 
@@ -833,6 +1245,7 @@ namespace iRacing_Spotter_Generator
                     }
 
                     message.Text = imported.Text;
+                    message.WavFileName = imported.WavFileName;
                     message.SourceType = AudioSourceType.Recording;
                     message.RecordedTakePath = wavPath;
                     message.AllTakes = new List<TakeInfo>
@@ -842,10 +1255,63 @@ namespace iRacing_Spotter_Generator
                     importedCount++;
                 }
 
+                // The imported pack may contain more variants for a MsgId than the
+                // built-in default template has rows for (e.g. the default template
+                // has 6 rows for SPCC_GOODJOB, but a pack may ship 25). Create extra
+                // rows for those leftover variants instead of silently dropping them.
+                var extraRows = new List<SpotterMessage>();
+                foreach (var (msgId, importedList) in importedByMsgId)
+                {
+                    var consumed = nextImportedIndex.TryGetValue(msgId, out var count) ? count : 0;
+                    if (consumed >= importedList.Count)
+                    {
+                        continue;
+                    }
+
+                    var lastIndex = _allMessages.FindLastIndex(m =>
+                        !m.IsComment && string.Equals(m.MsgId, msgId, StringComparison.OrdinalIgnoreCase));
+                    var insertAt = lastIndex >= 0 ? lastIndex + 1 : _allMessages.Count;
+
+                    for (var i = consumed; i < importedList.Count; i++)
+                    {
+                        var imported = importedList[i];
+                        var newMessage = new SpotterMessage
+                        {
+                            MsgId = msgId,
+                            Enabled = imported.Enabled
+                        };
+
+                        if (imported.Enabled && !string.IsNullOrWhiteSpace(imported.WavFileName))
+                        {
+                            var wavPath = Path.Combine(folder, imported.WavFileName);
+                            if (File.Exists(wavPath))
+                            {
+                                newMessage.Text = imported.Text;
+                                newMessage.WavFileName = imported.WavFileName;
+                                newMessage.SourceType = AudioSourceType.Recording;
+                                newMessage.RecordedTakePath = wavPath;
+                                newMessage.AllTakes = new List<TakeInfo>
+                                {
+                                    new TakeInfo { FilePath = wavPath, Name = "Imported" }
+                                };
+                                importedCount++;
+                            }
+                        }
+
+                        extraRows.Add(newMessage);
+                        _allMessages.Insert(insertAt++, newMessage);
+                    }
+                }
+
+                foreach (var message in extraRows)
+                {
+                    message.PropertyChanged += Message_PropertyChanged;
+                }
+
                 DestinationTextBox.Text = folder;
                 PackNameTextBox.Text = new DirectoryInfo(folder).Name;
 
-                RefreshView(FilterTextBox.Text);
+                RefreshView();
                 RefreshExportedFlags();
                 StatusTextBlock.Text = $"{LocalizationManager.GetString("Str_PackImported")} {importedCount}";
                 _isDirty = true;
@@ -941,7 +1407,9 @@ namespace iRacing_Spotter_Generator
                         Status = message.Status,
                         AddSquelchStart = message.AddSquelchStart,
                         AddSquelchEnd = message.AddSquelchEnd,
-                        AddRadioEffect = message.AddRadioEffect
+                        AddRadioEffect = message.AddRadioEffect,
+                        AddPttStart = message.AddPttStart,
+                        AddPttEnd = message.AddPttEnd
                     });
                 }
 
@@ -1034,11 +1502,13 @@ namespace iRacing_Spotter_Generator
                         Status = message.Status,
                         AddSquelchStart = message.AddSquelchStart,
                         AddSquelchEnd = message.AddSquelchEnd,
-                        AddRadioEffect = message.AddRadioEffect
+                        AddRadioEffect = message.AddRadioEffect,
+                        AddPttStart = message.AddPttStart,
+                        AddPttEnd = message.AddPttEnd
                     });
                 }
 
-                _knownMsgIds.Clear();
+
                 foreach (var msgId in _allMessages.Select(m => m.MsgId))
                 {
                     _knownMsgIds.Add(msgId);
@@ -1066,7 +1536,7 @@ namespace iRacing_Spotter_Generator
                 SquelchVolumeTextBox.Text = _settings.SquelchVolume.ToString(System.Globalization.CultureInfo.InvariantCulture);
                 DefaultVoiceComboBox.SelectedValue = _settings.DefaultGoogleVoiceName;
 
-                RefreshView(FilterTextBox.Text);
+                RefreshView();
                 RefreshExportedFlags();
                 StatusTextBlock.Text = $"{LocalizationManager.GetString("Str_ProjectLoaded")} {dialog.FileName}";
                 _isDirty = false;
@@ -1098,6 +1568,13 @@ namespace iRacing_Spotter_Generator
                 RadioEffectLowCutHz = _settings.RadioEffectLowCutHz,
                 RadioEffectHighCutHz = _settings.RadioEffectHighCutHz,
                 RadioEffectDistortion = _settings.RadioEffectDistortion,
+                PttEnabled = _settings.PttEnabled,
+                PttDurationMs = _settings.PttDurationMs,
+                PttVolume = _settings.PttVolume,
+                PttStartFrequencyHz = _settings.PttStartFrequencyHz,
+                PttEndFrequencyHz = _settings.PttEndFrequencyHz,
+                PttStartFilePath = _settings.PttStartFilePath,
+                PttEndFilePath = _settings.PttEndFilePath,
                 OutputVolume = _settings.OutputVolume,
                 RequiredMsgIds = _knownMsgIds,
                 OnlyGenerateChanged = OnlyChangedCheckBox.IsChecked == true
@@ -1178,6 +1655,12 @@ namespace iRacing_Spotter_Generator
                         break;
                     case nameof(SpotterMessage.AddRadioEffect):
                         message.AddRadioEffect = value;
+                        break;
+                    case nameof(SpotterMessage.AddPttStart):
+                        message.AddPttStart = value;
+                        break;
+                    case nameof(SpotterMessage.AddPttEnd):
+                        message.AddPttEnd = value;
                         break;
                 }
             }

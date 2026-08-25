@@ -4,6 +4,11 @@
 
     <!-- Toolbar -->
     <sys:String x:Key="Str_Filter">Filter:</sys:String>
+    <sys:String x:Key="Str_FilterOnOffLabel">On/Off:</sys:String>
+    <sys:String x:Key="Str_FilterAll">All</sys:String>
+    <sys:String x:Key="Str_FilterOff">Off</sys:String>
+    <sys:String x:Key="Str_FilterYes">Yes</sys:String>
+    <sys:String x:Key="Str_FilterNo">No</sys:String>
     <sys:String x:Key="Str_LoadGoogleVoices">Load Google Voices</sys:String>
     <sys:String x:Key="Str_Settings">Settings</sys:String>
     <sys:String x:Key="Str_SettingsToggleTooltip">Show/hide settings panel</sys:String>
@@ -52,6 +57,20 @@
     <sys:String x:Key="Str_SquelchDurationLabel">Duration (ms):</sys:String>
     <sys:String x:Key="Str_SquelchVolumeLabel">Volume (0-1):</sys:String>
     <sys:String x:Key="Str_SquelchHint">Adds a short noise/click burst at the start and end of every generated file, like a typical radio squelch tail.</sys:String>
+    <sys:String x:Key="Str_PttHeader">Push-to-Talk Start/Stop Signal (PTT)</sys:String>
+    <sys:String x:Key="Str_PttAutoAdd">Add automatically</sys:String>
+    <sys:String x:Key="Str_PttDurationLabel">Duration (ms):</sys:String>
+    <sys:String x:Key="Str_PttVolumeLabel">Volume (0-1):</sys:String>
+    <sys:String x:Key="Str_PttStartFrequencyLabel">Start tone (Hz):</sys:String>
+    <sys:String x:Key="Str_PttEndFrequencyLabel">Stop tone (Hz):</sys:String>
+    <sys:String x:Key="Str_PttStartFileLabel">Custom start file:</sys:String>
+    <sys:String x:Key="Str_PttEndFileLabel">Custom stop file:</sys:String>
+    <sys:String x:Key="Str_PttHint">Adds a short tone sequence (two beeps) at the start and/or end of every generated file, like pressing/releasing the push-to-talk (PTT) button on a real radio. Can be enabled independently of the radio squelch above. Optionally, custom WAV files can be used instead of the generated tones.</sys:String>
+    <sys:String x:Key="Str_Test">Test</sys:String>
+    <sys:String x:Key="Str_TestAll">Test all together</sys:String>
+    <sys:String x:Key="Str_TestHint">Plays a short synthetic test tone using the current (not yet saved) settings, so you can hear changes immediately.</sys:String>
+    <sys:String x:Key="Str_TestRecordingLabel">Custom test take:</sys:String>
+    <sys:String x:Key="Str_TestRecordingHint">Optional: record your own test phrase or pick an existing WAV file. If a test take is present, the Test buttons use it instead of the synthetic test tone.</sys:String>
     <sys:String x:Key="Str_RadioEffectHeader">Radio Effect (Bandpass/Distortion)</sys:String>
     <sys:String x:Key="Str_RadioEffectAutoAdd">Apply automatically</sys:String>
     <sys:String x:Key="Str_RadioEffectLowCutLabel">Low cut (Hz):</sys:String>
@@ -91,6 +110,10 @@
     <sys:String x:Key="Str_ColumnTextTooltip">The message text to be spoken</sys:String>
     <sys:String x:Key="Str_ColumnSourceTooltip">Source of the audio (e.g., Google AI, Recording)</sys:String>
     <sys:String x:Key="Str_ColumnRadioEffectTooltip">Apply the radio effect to this message, if enabled in settings</sys:String>
+    <sys:String x:Key="Str_ColumnPttStart">PTT Start</sys:String>
+    <sys:String x:Key="Str_ColumnPttStartTooltip">Add the PTT start beep to this message, if enabled in settings</sys:String>
+    <sys:String x:Key="Str_ColumnPttEnd">PTT End</sys:String>
+    <sys:String x:Key="Str_ColumnPttEndTooltip">Add the PTT stop beep to this message, if enabled in settings</sys:String>
     <sys:String x:Key="Str_BulkToggleLabel">Set for all rows:</sys:String>
     <sys:String x:Key="Str_CheckAll">Check all</sys:String>
     <sys:String x:Key="Str_UncheckAll">Uncheck all</sys:String>
@@ -103,6 +126,7 @@
     <sys:String x:Key="Str_PackNameLabel">Pack name:</sys:String>
     <sys:String x:Key="Str_DestinationFolderLabel">Destination folder:</sys:String>
     <sys:String x:Key="Str_Browse">Browse...</sys:String>
+    <sys:String x:Key="Str_Clear">Clear</sys:String>
 
     <!-- Generate -->
     <sys:String x:Key="Str_GeneratePack">Generate Pack</sys:String>

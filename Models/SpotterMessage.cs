@@ -20,6 +20,8 @@ namespace iRacing_Spotter_Generator.Models
         private bool _addSquelchStart = true;
         private bool _addSquelchEnd = true;
         private bool _addRadioEffect = true;
+        private bool _addPttStart = true;
+        private bool _addPttEnd = true;
 
         /// <summary>
         /// Stable identifier for this row, used to keep a persistent per-row
@@ -133,6 +135,26 @@ namespace iRacing_Spotter_Generator.Models
         {
             get => _addRadioEffect;
             set => SetField(ref _addRadioEffect, value);
+        }
+
+        /// <summary>
+        /// Whether to add a PTT (push-to-talk) start beep at the start of this
+        /// message's audio. Defaults to true for backward compatibility.
+        /// </summary>
+        public bool AddPttStart
+        {
+            get => _addPttStart;
+            set => SetField(ref _addPttStart, value);
+        }
+
+        /// <summary>
+        /// Whether to add a PTT (push-to-talk) end beep at the end of this
+        /// message's audio. Defaults to true for backward compatibility.
+        /// </summary>
+        public bool AddPttEnd
+        {
+            get => _addPttEnd;
+            set => SetField(ref _addPttEnd, value);
         }
 
         /// <summary>

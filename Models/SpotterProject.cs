@@ -85,5 +85,7 @@ namespace iRacing_Spotter_Generator.Models
         public bool AddSquelchStart { get; set; } = true;
         public bool AddSquelchEnd { get; set; } = true;
         public bool AddRadioEffect { get; set; } = true;
+        public bool AddPttStart { get; set; } = true;
+        public bool AddPttEnd { get; set; } = true;
     }
 }
