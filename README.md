@@ -2,7 +2,8 @@
 
 A Windows desktop tool (WPF, .NET 10) for creating custom **spotter voice packs** for [iRacing](https://www.iracing.com/). Manage spotter message text, generate speech using Google Cloud Text-to-Speech or your own recordings, apply radio/squelch effects, and export a ready-to-use pack that iRacing can load directly.
 
-<img width="1371" height="691" alt="image" src="https://github.com/user-attachments/assets/e0a3022b-a8a4-4156-ab3a-e3c07a5af333" />
+<img width="1798" height="696" alt="image" src="https://github.com/user-attachments/assets/48c8aea7-284f-4ebe-9760-0651af037ac8" />
+
 
 
 ## Features
