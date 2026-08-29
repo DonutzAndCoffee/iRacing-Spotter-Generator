@@ -31,7 +31,17 @@ namespace iRacing_Spotter_Generator.Services
 
             var samples = ReadSamples(reader, format);
 
+            var rmsBefore = ComputeRms(samples);
+
             ApplyBandpass(samples, format.SampleRate, lowCutHz, highCutHz);
+
+            // The narrow-band cascade removes a lot of energy (bass and
+            // treble), which makes the effect much quieter than the source
+            // and, as a result, much less audible/noticeable. Restore the
+            // original loudness so the timbral change (not just a volume
+            // drop) is what stands out - just like a real radio, which is
+            // still "loud", just narrow-band.
+            NormalizeToRms(samples, rmsBefore);
 
             if (distortion > 0.0)
             {
@@ -101,20 +111,38 @@ namespace iRacing_Spotter_Generator.Services
         }
 
         /// <summary>
-        /// Applies a simple one-pole high-pass followed by a one-pole low-pass
-        /// filter (an RC bandpass cascade), attenuating frequencies outside
-        /// [lowCutHz, highCutHz], similar to the narrow response of a radio.
+        /// Number of one-pole stages cascaded for each of the high-pass and
+        /// low-pass filters. A single one-pole stage only rolls off at
+        /// ~6 dB/octave, which is far too gentle to sound like a narrow-band
+        /// radio channel - most of the "outside the band" energy is still
+        /// clearly audible. Cascading several stages steepens the roll-off
+        /// (~4 stages ≈ 24 dB/octave), producing the tight, honky, band-
+        /// limited character of actual push-to-talk radio audio.
+        /// </summary>
+        private const int FilterStages = 4;
+
+        /// <summary>
+        /// Applies a cascaded one-pole high-pass followed by a cascaded
+        /// one-pole low-pass filter (an RC bandpass cascade), attenuating
+        /// frequencies outside [lowCutHz, highCutHz], similar to the narrow
+        /// response of a radio.
         /// </summary>
         private static void ApplyBandpass(double[] samples, int sampleRate, int lowCutHz, int highCutHz)
         {
             if (lowCutHz > 0)
             {
-                ApplyHighPass(samples, sampleRate, lowCutHz);
+                for (var stage = 0; stage < FilterStages; stage++)
+                {
+                    ApplyHighPass(samples, sampleRate, lowCutHz);
+                }
             }
 
             if (highCutHz > 0 && highCutHz < sampleRate / 2)
             {
-                ApplyLowPass(samples, sampleRate, highCutHz);
+                for (var stage = 0; stage < FilterStages; stage++)
+                {
+                    ApplyLowPass(samples, sampleRate, highCutHz);
+                }
             }
         }
 
@@ -147,6 +175,70 @@ namespace iRacing_Spotter_Generator.Services
                 var output = previousOutput + alpha * (samples[i] - previousOutput);
                 previousOutput = output;
                 samples[i] = output;
+            }
+        }
+
+        /// <summary>
+        /// Computes the root-mean-square (average loudness) of the signal.
+        /// </summary>
+        private static double ComputeRms(double[] samples)
+        {
+            if (samples.Length == 0)
+            {
+                return 0.0;
+            }
+
+            var sumOfSquares = 0.0;
+            for (var i = 0; i < samples.Length; i++)
+            {
+                sumOfSquares += samples[i] * samples[i];
+            }
+
+            return Math.Sqrt(sumOfSquares / samples.Length);
+        }
+
+        /// <summary>
+        /// Rescales the signal so its RMS loudness matches
+        /// <paramref name="targetRms"/>, compensating for the level lost to
+        /// the bandpass filter's roll-off. The result is peak-limited to
+        /// avoid clipping from the gain boost.
+        /// </summary>
+        private static void NormalizeToRms(double[] samples, double targetRms)
+        {
+            if (targetRms <= 0.0)
+            {
+                return;
+            }
+
+            var currentRms = ComputeRms(samples);
+            if (currentRms <= 0.0001)
+            {
+                return;
+            }
+
+            var gain = targetRms / currentRms;
+
+            // Avoid boosting so hard that the loudest peaks would clip;
+            // scale the gain down if necessary based on the current peak.
+            var peak = 0.0;
+            for (var i = 0; i < samples.Length; i++)
+            {
+                var abs = Math.Abs(samples[i]);
+                if (abs > peak)
+                {
+                    peak = abs;
+                }
+            }
+
+            if (peak > 0.0001)
+            {
+                var maxGain = 0.98 / peak;
+                gain = Math.Min(gain, maxGain);
+            }
+
+            for (var i = 0; i < samples.Length; i++)
+            {
+                samples[i] *= gain;
             }
         }
 

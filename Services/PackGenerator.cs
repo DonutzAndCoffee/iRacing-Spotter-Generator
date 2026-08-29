@@ -106,39 +106,29 @@ namespace iRacing_Spotter_Generator.Services
         public double RadioEffectDistortion { get; set; } = 0.2;
 
         /// <summary>
-        /// Whether synthetic PTT (push-to-talk) start/stop beep tones are
-        /// automatically added to every generated sample, independently of
-        /// the squelch noise burst.
+        /// Whether a synthetic PTT (push-to-talk) Roger Beep tone is
+        /// automatically added to the end of every generated sample,
+        /// independently of the squelch noise burst.
         /// </summary>
         public bool PttEnabled { get; set; } = false;
 
         /// <summary>
-        /// Duration (in milliseconds) of each PTT beep.
+        /// Duration (in milliseconds) of the PTT Roger Beep.
         /// </summary>
         public int PttDurationMs { get; set; } = 200;
 
         /// <summary>
-        /// Volume (0.0 - 1.0) of the PTT beeps.
+        /// Volume (0.0 - 1.0) of the PTT Roger Beep.
         /// </summary>
         public double PttVolume { get; set; } = 0.5;
 
         /// <summary>
-        /// Frequency (Hz) of the synthesized "start talking" beep.
-        /// </summary>
-        public int PttStartFrequencyHz { get; set; } = 1000;
-
-        /// <summary>
-        /// Frequency (Hz) of the synthesized "stop talking" beep.
+        /// Frequency (Hz) of the synthesized "stop talking" Roger Beep.
         /// </summary>
         public int PttEndFrequencyHz { get; set; } = 800;
 
         /// <summary>
-        /// Optional custom WAV file used instead of the synthesized start beep.
-        /// </summary>
-        public string? PttStartFilePath { get; set; }
-
-        /// <summary>
-        /// Optional custom WAV file used instead of the synthesized end beep.
+        /// Optional custom WAV file used instead of the synthesized Roger Beep.
         /// </summary>
         public string? PttEndFilePath { get; set; }
 
@@ -211,7 +201,7 @@ namespace iRacing_Spotter_Generator.Services
         }
 
         /// <summary>
-        /// Applies PTT start/stop beeps to <paramref name="wavPath"/> in place,
+        /// Applies the PTT Roger Beep to <paramref name="wavPath"/> in place,
         /// if enabled in <paramref name="options"/>, independently of squelch.
         /// </summary>
         private static void ApplyPttIfEnabled(PackGenerationOptions options, SpotterMessage message, string wavPath)
@@ -226,9 +216,9 @@ namespace iRacing_Spotter_Generator.Services
             {
                 PttEffectGenerator.ApplyPtt(
                     wavPath, processedPath, options.PttDurationMs, options.PttVolume,
-                    options.PttStartFrequencyHz, options.PttEndFrequencyHz,
-                    message.AddPttStart, message.AddPttEnd,
-                    options.PttStartFilePath, options.PttEndFilePath);
+                    options.PttEndFrequencyHz,
+                    message.AddPttEnd,
+                    options.PttEndFilePath);
                 File.Copy(processedPath, wavPath, overwrite: true);
             }
             finally
@@ -240,6 +230,41 @@ namespace iRacing_Spotter_Generator.Services
                 catch (IOException)
                 {
                     // Ignore cleanup failures for temp PTT-effect files.
+                }
+            }
+        }
+
+        /// <summary>
+        /// Applies just the closing squelch tail to <paramref name="wavPath"/>
+        /// in place. Used when PTT is enabled, so the realistic effect order
+        /// (squelch-open, speech, Roger Beep, squelch-close) can be achieved
+        /// by deferring the squelch-close noise until after the Roger Beep
+        /// has been appended.
+        /// </summary>
+        private static void ApplySquelchEndIfNeeded(PackGenerationOptions options, SpotterMessage message, string wavPath)
+        {
+            if (!options.SquelchEnabled || !options.PttEnabled || !message.AddSquelchEnd)
+            {
+                return;
+            }
+
+            var processedPath = Path.Combine(Path.GetTempPath(), $"spgen_squelchend_{Guid.NewGuid():N}.wav");
+            try
+            {
+                SquelchEffectGenerator.ApplySquelch(
+                    wavPath, processedPath, options.SquelchDurationMs, options.SquelchVolume,
+                    addStart: false, addEnd: true);
+                File.Copy(processedPath, wavPath, overwrite: true);
+            }
+            finally
+            {
+                try
+                {
+                    File.Delete(processedPath);
+                }
+                catch (IOException)
+                {
+                    // Ignore cleanup failures for temp squelch-effect files.
                 }
             }
         }
@@ -339,9 +364,13 @@ namespace iRacing_Spotter_Generator.Services
 
                             if (options.SquelchEnabled)
                             {
+                                // Defer the squelch-close tail until after the
+                                // Roger Beep when PTT is enabled, so the
+                                // realistic order is squelch-open, speech,
+                                // Roger Beep, squelch-close.
                                 SquelchEffectGenerator.ApplySquelch(
                                     convertedRecordingPath, wavPath, options.SquelchDurationMs, options.SquelchVolume,
-                                    message.AddSquelchStart, message.AddSquelchEnd);
+                                    message.AddSquelchStart, message.AddSquelchEnd && !options.PttEnabled);
                             }
                             else
                             {
@@ -349,6 +378,7 @@ namespace iRacing_Spotter_Generator.Services
                             }
 
                             ApplyPttIfEnabled(options, message, wavPath);
+                            ApplySquelchEndIfNeeded(options, message, wavPath);
                             ApplyVolumeIfNeeded(options, wavPath);
                         }
                         finally
@@ -397,9 +427,13 @@ namespace iRacing_Spotter_Generator.Services
 
                             if (options.SquelchEnabled)
                             {
+                                // Defer the squelch-close tail until after the
+                                // Roger Beep when PTT is enabled, so the
+                                // realistic order is squelch-open, speech,
+                                // Roger Beep, squelch-close.
                                 SquelchEffectGenerator.ApplySquelch(
                                     convertedWavPath, wavPath, options.SquelchDurationMs, options.SquelchVolume,
-                                    message.AddSquelchStart, message.AddSquelchEnd);
+                                    message.AddSquelchStart, message.AddSquelchEnd && !options.PttEnabled);
                             }
                             else
                             {
@@ -407,6 +441,7 @@ namespace iRacing_Spotter_Generator.Services
                             }
 
                             ApplyPttIfEnabled(options, message, wavPath);
+                            ApplySquelchEndIfNeeded(options, message, wavPath);
                             ApplyVolumeIfNeeded(options, wavPath);
                         }
                         finally
@@ -524,14 +559,11 @@ namespace iRacing_Spotter_Generator.Services
             sb.Append(options.RadioEffectLowCutHz).Append('|');
             sb.Append(options.RadioEffectHighCutHz).Append('|');
             sb.Append(options.RadioEffectDistortion).Append('|');
-            sb.Append(message.AddPttStart).Append('|');
             sb.Append(message.AddPttEnd).Append('|');
             sb.Append(options.PttEnabled).Append('|');
             sb.Append(options.PttDurationMs).Append('|');
             sb.Append(options.PttVolume).Append('|');
-            sb.Append(options.PttStartFrequencyHz).Append('|');
             sb.Append(options.PttEndFrequencyHz).Append('|');
-            sb.Append(options.PttStartFilePath).Append('|');
             sb.Append(options.PttEndFilePath).Append('|');
             sb.Append(options.OutputVolume).Append('|');
 
@@ -547,8 +579,8 @@ namespace iRacing_Spotter_Generator.Services
             bool radioEffectEnabled = false, int radioEffectLowCutHz = 300, int radioEffectHighCutHz = 3000,
             double radioEffectDistortion = 0.2, double outputVolume = 1.0,
             bool pttEnabled = false, int pttDurationMs = 200, double pttVolume = 0.5,
-            int pttStartFrequencyHz = 1000, int pttEndFrequencyHz = 800,
-            string? pttStartFilePath = null, string? pttEndFilePath = null,
+            int pttEndFrequencyHz = 800,
+            string? pttEndFilePath = null,
             CancellationToken cancellationToken = default)
         {
             var client = new GoogleTtsClient(apiKey);
@@ -574,7 +606,12 @@ namespace iRacing_Spotter_Generator.Services
 
                 if (squelchEnabled)
                 {
-                    SquelchEffectGenerator.ApplySquelch(convertedTempPath, tempPath, squelchDurationMs, squelchVolume);
+                    // Defer the squelch-close tail until after the Roger Beep
+                    // when PTT is enabled, so the realistic order is
+                    // squelch-open, speech, Roger Beep, squelch-close.
+                    SquelchEffectGenerator.ApplySquelch(
+                        convertedTempPath, tempPath, squelchDurationMs, squelchVolume,
+                        addStart: true, addEnd: !pttEnabled);
                 }
                 else
                 {
@@ -586,9 +623,19 @@ namespace iRacing_Spotter_Generator.Services
                     var pttTempPath = Path.Combine(Path.GetTempPath(), $"spgen_preview_ptt_{Guid.NewGuid():N}.wav");
                     PttEffectGenerator.ApplyPtt(
                         tempPath, pttTempPath, pttDurationMs, pttVolume,
-                        pttStartFrequencyHz, pttEndFrequencyHz, startFilePath: pttStartFilePath, endFilePath: pttEndFilePath);
+                        pttEndFrequencyHz, endFilePath: pttEndFilePath);
                     File.Copy(pttTempPath, tempPath, overwrite: true);
                     File.Delete(pttTempPath);
+
+                    if (squelchEnabled)
+                    {
+                        var squelchEndTempPath = Path.Combine(Path.GetTempPath(), $"spgen_preview_squelchend_{Guid.NewGuid():N}.wav");
+                        SquelchEffectGenerator.ApplySquelch(
+                            tempPath, squelchEndTempPath, squelchDurationMs, squelchVolume,
+                            addStart: false, addEnd: true);
+                        File.Copy(squelchEndTempPath, tempPath, overwrite: true);
+                        File.Delete(squelchEndTempPath);
+                    }
                 }
 
                 if (Math.Abs(outputVolume - 1.0) >= 0.0001)

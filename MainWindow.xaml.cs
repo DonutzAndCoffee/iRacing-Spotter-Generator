@@ -79,9 +79,7 @@ namespace iRacing_Spotter_Generator
             PttEnabledCheckBox.IsChecked = _settings.PttEnabled;
             PttDurationTextBox.Text = _settings.PttDurationMs.ToString();
             PttVolumeTextBox.Text = _settings.PttVolume.ToString(System.Globalization.CultureInfo.InvariantCulture);
-            PttStartFrequencyTextBox.Text = _settings.PttStartFrequencyHz.ToString();
             PttEndFrequencyTextBox.Text = _settings.PttEndFrequencyHz.ToString();
-            PttStartFileTextBox.Text = _settings.PttStartFilePath ?? string.Empty;
             PttEndFileTextBox.Text = _settings.PttEndFilePath ?? string.Empty;
             TestRecordingTextBox.Text = _settings.TestRecordingPath ?? string.Empty;
 
@@ -731,9 +729,7 @@ namespace iRacing_Spotter_Generator
                 PttVolume = double.TryParse(
                     PttVolumeTextBox.Text, System.Globalization.NumberStyles.Float,
                     System.Globalization.CultureInfo.InvariantCulture, out var pttVolume) ? pttVolume : 0.5,
-                PttStartFrequencyHz = int.TryParse(PttStartFrequencyTextBox.Text, out var pttStartFreq) ? pttStartFreq : 1000,
                 PttEndFrequencyHz = int.TryParse(PttEndFrequencyTextBox.Text, out var pttEndFreq) ? pttEndFreq : 800,
-                PttStartFilePath = string.IsNullOrWhiteSpace(PttStartFileTextBox.Text) ? null : PttStartFileTextBox.Text,
                 PttEndFilePath = string.IsNullOrWhiteSpace(PttEndFileTextBox.Text) ? null : PttEndFileTextBox.Text,
                 TestRecordingPath = string.IsNullOrWhiteSpace(TestRecordingTextBox.Text) ? null : TestRecordingTextBox.Text,
                 Language = LocalizationManager.CurrentLanguage
@@ -780,8 +776,14 @@ namespace iRacing_Spotter_Generator
 
                         if (applySquelch)
                         {
+                            // Only the squelch-open noise goes before the
+                            // speech; the closing squelch tail is applied
+                            // after the Roger Beep further down, so the
+                            // realistic order is: squelch-open, speech,
+                            // Roger Beep, squelch-close.
                             SquelchEffectGenerator.ApplySquelch(
-                                currentPath, processedPath, settings.SquelchDurationMs, settings.SquelchVolume);
+                                currentPath, processedPath, settings.SquelchDurationMs, settings.SquelchVolume,
+                                addStart: true, addEnd: !applyPtt);
                             File.Copy(processedPath, currentPath, overwrite: true);
                         }
 
@@ -789,10 +791,18 @@ namespace iRacing_Spotter_Generator
                         {
                             PttEffectGenerator.ApplyPtt(
                                 currentPath, processedPath, settings.PttDurationMs, settings.PttVolume,
-                                settings.PttStartFrequencyHz, settings.PttEndFrequencyHz,
-                                true, true,
-                                settings.PttStartFilePath, settings.PttEndFilePath);
+                                settings.PttEndFrequencyHz,
+                                true,
+                                settings.PttEndFilePath);
                             File.Copy(processedPath, currentPath, overwrite: true);
+
+                            if (applySquelch)
+                            {
+                                SquelchEffectGenerator.ApplySquelch(
+                                    currentPath, processedPath, settings.SquelchDurationMs, settings.SquelchVolume,
+                                    addStart: false, addEnd: true);
+                                File.Copy(processedPath, currentPath, overwrite: true);
+                            }
                         }
 
                         if (applyVolume && Math.Abs(settings.OutputVolume - 1.0) >= 0.0001)
@@ -856,20 +866,6 @@ namespace iRacing_Spotter_Generator
                 applySquelch: settings.SquelchEnabled,
                 applyPtt: settings.PttEnabled,
                 applyVolume: true);
-        }
-
-        private void PttStartFileBrowseButton_Click(object sender, RoutedEventArgs e)
-        {
-            var dialog = new OpenFileDialog { Filter = "WAV files (*.wav)|*.wav|All files (*.*)|*.*" };
-            if (dialog.ShowDialog(this) == true)
-            {
-                PttStartFileTextBox.Text = dialog.FileName;
-            }
-        }
-
-        private void PttStartFileClearButton_Click(object sender, RoutedEventArgs e)
-        {
-            PttStartFileTextBox.Text = string.Empty;
         }
 
         private void PttEndFileBrowseButton_Click(object sender, RoutedEventArgs e)
@@ -987,6 +983,7 @@ namespace iRacing_Spotter_Generator
                         var squelchedPath = Path.Combine(Path.GetTempPath(), $"iracing_preview_{Guid.NewGuid():N}.wav");
                         var volumePath = Path.Combine(Path.GetTempPath(), $"iracing_preview_vol_{Guid.NewGuid():N}.wav");
                         var pttPath = Path.Combine(Path.GetTempPath(), $"iracing_preview_ptt_{Guid.NewGuid():N}.wav");
+                        var squelchEndPath = Path.Combine(Path.GetTempPath(), $"iracing_preview_squelchend_{Guid.NewGuid():N}.wav");
 
                         try
                         {
@@ -1008,9 +1005,14 @@ namespace iRacing_Spotter_Generator
                             string playbackPath;
                             if (squelchEnabled)
                             {
+                                // Apply the squelch-open noise now; the
+                                // squelch-close tail (if any) is applied
+                                // after the Roger Beep below, so the
+                                // realistic order is: squelch-open, speech,
+                                // Roger Beep, squelch-close.
                                 SquelchEffectGenerator.ApplySquelch(
                                     convertedPath, squelchedPath, squelchDurationMs, squelchVolume,
-                                    addSquelchStart, addSquelchEnd);
+                                    addSquelchStart, addSquelchEnd && !_settings.PttEnabled);
                                 playbackPath = squelchedPath;
                             }
                             else
@@ -1022,10 +1024,18 @@ namespace iRacing_Spotter_Generator
                             {
                                 PttEffectGenerator.ApplyPtt(
                                     playbackPath, pttPath, _settings.PttDurationMs, _settings.PttVolume,
-                                    _settings.PttStartFrequencyHz, _settings.PttEndFrequencyHz,
-                                    message.AddPttStart, message.AddPttEnd,
-                                    _settings.PttStartFilePath, _settings.PttEndFilePath);
+                                    _settings.PttEndFrequencyHz,
+                                    message.AddPttEnd,
+                                    _settings.PttEndFilePath);
                                 playbackPath = pttPath;
+
+                                if (squelchEnabled && addSquelchEnd)
+                                {
+                                    SquelchEffectGenerator.ApplySquelch(
+                                        playbackPath, squelchEndPath, squelchDurationMs, squelchVolume,
+                                        addStart: false, addEnd: true);
+                                    playbackPath = squelchEndPath;
+                                }
                             }
 
                             if (Math.Abs(outputVolume - 1.0) >= 0.0001)
@@ -1039,7 +1049,7 @@ namespace iRacing_Spotter_Generator
                         }
                         finally
                         {
-                            foreach (var tempFile in new[] { convertedPath, squelchedPath, volumePath, pttPath })
+                            foreach (var tempFile in new[] { convertedPath, squelchedPath, volumePath, pttPath, squelchEndPath })
                             {
                                 try
                                 {
@@ -1089,8 +1099,7 @@ namespace iRacing_Spotter_Generator
                         _settings.RadioEffectEnabled && message.AddRadioEffect, _settings.RadioEffectLowCutHz, _settings.RadioEffectHighCutHz,
                         _settings.RadioEffectDistortion, _settings.OutputVolume,
                         _settings.PttEnabled, _settings.PttDurationMs, _settings.PttVolume,
-                        _settings.PttStartFrequencyHz, _settings.PttEndFrequencyHz,
-                        message.AddPttStart ? _settings.PttStartFilePath : null,
+                        _settings.PttEndFrequencyHz,
                         message.AddPttEnd ? _settings.PttEndFilePath : null);
                 }
                 catch (Exception ex)
@@ -1408,7 +1417,6 @@ namespace iRacing_Spotter_Generator
                         AddSquelchStart = message.AddSquelchStart,
                         AddSquelchEnd = message.AddSquelchEnd,
                         AddRadioEffect = message.AddRadioEffect,
-                        AddPttStart = message.AddPttStart,
                         AddPttEnd = message.AddPttEnd
                     });
                 }
@@ -1503,7 +1511,6 @@ namespace iRacing_Spotter_Generator
                         AddSquelchStart = message.AddSquelchStart,
                         AddSquelchEnd = message.AddSquelchEnd,
                         AddRadioEffect = message.AddRadioEffect,
-                        AddPttStart = message.AddPttStart,
                         AddPttEnd = message.AddPttEnd
                     });
                 }
@@ -1571,9 +1578,7 @@ namespace iRacing_Spotter_Generator
                 PttEnabled = _settings.PttEnabled,
                 PttDurationMs = _settings.PttDurationMs,
                 PttVolume = _settings.PttVolume,
-                PttStartFrequencyHz = _settings.PttStartFrequencyHz,
                 PttEndFrequencyHz = _settings.PttEndFrequencyHz,
-                PttStartFilePath = _settings.PttStartFilePath,
                 PttEndFilePath = _settings.PttEndFilePath,
                 OutputVolume = _settings.OutputVolume,
                 RequiredMsgIds = _knownMsgIds,
@@ -1655,9 +1660,6 @@ namespace iRacing_Spotter_Generator
                         break;
                     case nameof(SpotterMessage.AddRadioEffect):
                         message.AddRadioEffect = value;
-                        break;
-                    case nameof(SpotterMessage.AddPttStart):
-                        message.AddPttStart = value;
                         break;
                     case nameof(SpotterMessage.AddPttEnd):
                         message.AddPttEnd = value;

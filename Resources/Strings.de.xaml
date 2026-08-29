@@ -57,15 +57,13 @@
     <sys:String x:Key="Str_SquelchDurationLabel">Dauer (ms):</sys:String>
     <sys:String x:Key="Str_SquelchVolumeLabel">Lautstärke (0-1):</sys:String>
     <sys:String x:Key="Str_SquelchHint">Fügt am Anfang und Ende jeder generierten Datei ein kurzes Rausch-/Klickgeräusch hinzu, wie es typisch für Boxenfunk ist.</sys:String>
-    <sys:String x:Key="Str_PttHeader">Sprechfunk Start/Stopp-Signal (PTT)</sys:String>
+    <sys:String x:Key="Str_PttHeader">Roger Beep (Sendeende-Signal)</sys:String>
     <sys:String x:Key="Str_PttAutoAdd">Automatisch hinzufügen</sys:String>
     <sys:String x:Key="Str_PttDurationLabel">Dauer (ms):</sys:String>
     <sys:String x:Key="Str_PttVolumeLabel">Lautstärke (0-1):</sys:String>
-    <sys:String x:Key="Str_PttStartFrequencyLabel">Start-Ton (Hz):</sys:String>
-    <sys:String x:Key="Str_PttEndFrequencyLabel">Stopp-Ton (Hz):</sys:String>
-    <sys:String x:Key="Str_PttStartFileLabel">Eigene Start-Datei:</sys:String>
-    <sys:String x:Key="Str_PttEndFileLabel">Eigene Stopp-Datei:</sys:String>
-    <sys:String x:Key="Str_PttHint">Fügt am Anfang und/oder Ende jeder generierten Datei eine kurze Tonfolge (zwei Pieptöne) hinzu, wie beim Drücken/Loslassen der Sprechtaste (PTT) eines echten Funkgeräts. Unabhängig vom Funkgeräusch oben aktivierbar. Optional können eigene WAV-Dateien anstelle der erzeugten Töne verwendet werden.</sys:String>
+    <sys:String x:Key="Str_PttEndFrequencyLabel">Piepton (Hz):</sys:String>
+    <sys:String x:Key="Str_PttEndFileLabel">Eigene Piepton-Datei:</sys:String>
+    <sys:String x:Key="Str_PttHint">Fügt direkt nach dem Ende jeder generierten Datei einen kurzen zweitönigen "Roger Beep" hinzu, so wie ein echter Funker beim Loslassen der Sprechtaste (PTT) "Sendung beendet" signalisiert. Echte Funkgeräte haben kein hörbares Start-Signal (nur das Öffnen des Squelch/Rauschsperre des Empfängers, siehe oben), daher wird am Anfang kein Ton hinzugefügt. Unabhängig vom Funkrauschen oben aktivierbar. Optional kann eine eigene WAV-Datei anstelle des erzeugten Tons verwendet werden.</sys:String>
     <sys:String x:Key="Str_Test">Testen</sys:String>
     <sys:String x:Key="Str_TestAll">Alles zusammen testen</sys:String>
     <sys:String x:Key="Str_TestHint">Spielt einen kurzen synthetischen Testton mit den aktuellen (noch ungespeicherten) Einstellungen ab, damit du Änderungen sofort hören kannst.</sys:String>
@@ -110,10 +108,8 @@
     <sys:String x:Key="Str_ColumnTextTooltip">Der zu sprechende Nachrichtentext</sys:String>
     <sys:String x:Key="Str_ColumnSourceTooltip">Quelle des Audios (z. B. Google KI, Aufnahme)</sys:String>
     <sys:String x:Key="Str_ColumnRadioEffectTooltip">Funkeffekt auf diese Nachricht anwenden, sofern in den Einstellungen aktiviert</sys:String>
-    <sys:String x:Key="Str_ColumnPttStart">PTT Start</sys:String>
-    <sys:String x:Key="Str_ColumnPttStartTooltip">PTT-Start-Ton zu dieser Nachricht hinzufügen, sofern in den Einstellungen aktiviert</sys:String>
-    <sys:String x:Key="Str_ColumnPttEnd">PTT Ende</sys:String>
-    <sys:String x:Key="Str_ColumnPttEndTooltip">PTT-Stopp-Ton zu dieser Nachricht hinzufügen, sofern in den Einstellungen aktiviert</sys:String>
+    <sys:String x:Key="Str_ColumnPttEnd">Roger Beep</sys:String>
+    <sys:String x:Key="Str_ColumnPttEndTooltip">Roger Beep am Ende dieser Nachricht hinzufügen, sofern in den Einstellungen aktiviert</sys:String>
     <sys:String x:Key="Str_BulkToggleLabel">Für alle Zeilen setzen:</sys:String>
     <sys:String x:Key="Str_CheckAll">Alle setzen</sys:String>
     <sys:String x:Key="Str_UncheckAll">Alle entfernen</sys:String>
@@ -202,6 +198,18 @@
     <sys:String x:Key="Str_Failed">Fehlgeschlagen.</sys:String>
     <sys:String x:Key="Str_NoGoogleApiKeyForTranslation">Bitte zuerst einen Google API-Key unter 'Einstellungen' hinterlegen (Cloud Translation API muss aktiviert sein).</sys:String>
     <sys:String x:Key="Str_TranslationFailed">Übersetzung fehlgeschlagen:</sys:String>
-    <sys:String x:Key="Str_PackGenerationFailed">Pack-Erstellung fehlgeschlagen:</sys:String>
+
+    <!-- SourceRecordingWindow -->
+    <sys:String x:Key="Str_CutFromSourceRecording">Aus Quellaufnahme schneiden</sys:String>
+    <sys:String x:Key="Str_SourceRecordingsWindowTitle">Quellaufnahmen</sys:String>
+    <sys:String x:Key="Str_ImportSourceRecording">Quellaufnahme importieren</sys:String>
+    <sys:String x:Key="Str_ImportingSourceRecording">Importiere '{0}'...</sys:String>
+    <sys:String x:Key="Str_ImportSourceRecordingFailed">Quellaufnahme konnte nicht importiert werden: {0}</sys:String>
+    <sys:String x:Key="Str_ConfirmDeleteSourceRecording">Diese Quellaufnahme wirklich löschen? Bereits daraus geschnittene Takes bleiben erhalten.</sys:String>
+    <sys:String x:Key="Str_UsedRegionsHint">Bereits verwendete Bereiche (können sich überschneiden, rein informativ):</sys:String>
+    <sys:String x:Key="Str_UseCutSegment">Ausschnitt übernehmen</sys:String>
+    <sys:String x:Key="Str_SelectSourceRecordingFirst">Bitte zuerst eine Quellaufnahme auswählen.</sys:String>
+    <sys:String x:Key="Str_Close">Schließen</sys:String>
+
 
 </ResourceDictionary>

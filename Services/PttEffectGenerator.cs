@@ -5,43 +5,35 @@ using NAudio.Wave;
 namespace iRacing_Spotter_Generator.Services
 {
     /// <summary>
-    /// Generates short synthetic "push-to-talk" (PTT) signal tone sequences -
-    /// a rising two-tone chirp for the start and a falling two-tone chirp for
-    /// the end of a transmission, like a real analog radio - and
-    /// prepends/appends them to an existing WAV file. This is an
-    /// alternative/addition to <see cref="SquelchEffectGenerator"/>'s noise
-    /// burst. Custom WAV files can be used instead of the synthesized tones
-    /// for either signal.
+    /// Generates a short synthetic "Roger Beep" - a falling two-tone chirp
+    /// played right after a real radio operator releases the push-to-talk
+    /// (PTT) button to signal "transmission over" - and appends it to an
+    /// existing WAV file. Real analog radios don't emit an audible tone when
+    /// PTT is first pressed (only the receiver's squelch opening, see
+    /// <see cref="SquelchEffectGenerator"/>), so no start tone is generated
+    /// here. A custom WAV file can be used instead of the synthesized tone.
     /// </summary>
     public static class PttEffectGenerator
     {
         /// <summary>
-        /// Wraps the WAV file at <paramref name="sourcePath"/> with optional PTT
-        /// start/stop signals, writing the result to <paramref name="destinationPath"/>.
+        /// Wraps the WAV file at <paramref name="sourcePath"/> with an optional
+        /// Roger Beep at the end, writing the result to <paramref name="destinationPath"/>.
         /// The source file's own format (sample rate / bits / channels) is preserved.
         /// </summary>
         public static void ApplyPtt(
             string sourcePath, string destinationPath, int durationMs, double volume,
-            int startFrequencyHz, int endFrequencyHz,
-            bool addStart = true, bool addEnd = true,
-            string? startFilePath = null, string? endFilePath = null)
+            int endFrequencyHz,
+            bool addEnd = true,
+            string? endFilePath = null)
         {
             using var reader = new WaveFileReader(sourcePath);
             var format = reader.WaveFormat;
 
-            var startBurst = addStart
-                ? GetBurst(format, durationMs, volume, startFrequencyHz, startFilePath, isRising: true)
-                : Array.Empty<byte>();
             var endBurst = addEnd
                 ? GetBurst(format, durationMs, volume, endFrequencyHz, endFilePath, isRising: false)
                 : Array.Empty<byte>();
 
             using var writer = new WaveFileWriter(destinationPath, format);
-
-            if (addStart)
-            {
-                writer.Write(startBurst, 0, startBurst.Length);
-            }
 
             var buffer = new byte[format.AverageBytesPerSecond];
             int bytesRead;

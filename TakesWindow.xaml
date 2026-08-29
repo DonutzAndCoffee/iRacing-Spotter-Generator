@@ -19,11 +19,12 @@
 
         <TextBlock x:Name="MessageTextBlock" Grid.Row="0" TextWrapping="Wrap" FontWeight="Bold" Margin="0,0,0,10"/>
 
-        <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,10">
+        <WrapPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,10">
             <Button x:Name="RecordButton" Padding="10,5" Click="RecordButton_Click"/>
             <Button Content="{DynamicResource Str_ImportWavFiles}" Padding="10,5" Margin="10,0,0,0" Click="ImportTakesButton_Click"/>
+            <Button Content="{DynamicResource Str_CutFromSourceRecording}" Padding="10,5" Margin="10,0,0,0" Click="CutFromSourceRecordingButton_Click"/>
             <TextBlock x:Name="RecordingStatusTextBlock" VerticalAlignment="Center" Margin="15,0,0,0" Foreground="Red"/>
-        </StackPanel>
+        </WrapPanel>
 
         <TextBlock x:Name="QualityTextBlock" Grid.Row="2" Foreground="Gray" Margin="0,0,0,10"/>
 
@@ -91,11 +92,11 @@
             </StackPanel>
         </Border>
 
-        <StackPanel Grid.Row="6" Orientation="Horizontal" HorizontalAlignment="Right">
+        <WrapPanel Grid.Row="6" Orientation="Horizontal" HorizontalAlignment="Right">
             <Button Content="{DynamicResource Str_Play}" Padding="8,4" Margin="0,0,10,0" Click="PlayButton_Click"/>
             <Button Content="{DynamicResource Str_Delete}" Padding="8,4" Margin="0,0,10,0" Click="DeleteButton_Click"/>
             <Button Content="{DynamicResource Str_UseThisTake}" Padding="8,4" Margin="0,0,10,0" Click="UseTakeButton_Click" FontWeight="Bold"/>
             <Button Content="{DynamicResource Str_Cancel}" Padding="8,4" Click="CancelButton_Click" IsCancel="True"/>
-        </StackPanel>
+        </WrapPanel>
     </Grid>
 </Window>

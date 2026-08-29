@@ -76,6 +76,8 @@ namespace iRacing_Spotter_Generator
     public partial class TakesWindow : Window
     {
         private readonly string _tempFolder;
+        private readonly string _msgId;
+        private readonly string _messageText;
         private readonly ObservableCollection<TakeItem> _takes = new();
         private readonly int _sampleRate;
         private readonly int _bitsPerSample;
@@ -107,6 +109,8 @@ namespace iRacing_Spotter_Generator
         {
             InitializeComponent();
 
+            _msgId = msgId;
+            _messageText = messageText;
             _sampleRate = sampleRate;
             _bitsPerSample = bitsPerSample;
 
@@ -270,6 +274,45 @@ namespace iRacing_Spotter_Generator
             if (lastImported is not null)
             {
                 TakesListBox.SelectedItem = lastImported;
+            }
+        }
+
+        /// <summary>
+        /// Opens the source recording manager so the operator can cut a
+        /// segment out of a previously imported long recording (e.g. a full
+        /// race session) and use it as a new take for this message.
+        /// </summary>
+        private void CutFromSourceRecordingButton_Click(object sender, RoutedEventArgs e)
+        {
+            var window = new SourceRecordingWindow(_msgId, _messageText, _sampleRate, _bitsPerSample)
+            {
+                Owner = this
+            };
+
+            if (window.ShowDialog() != true || string.IsNullOrEmpty(window.CutResultPath) || !File.Exists(window.CutResultPath))
+            {
+                return;
+            }
+
+            try
+            {
+                _takeCounter++;
+                var destinationPath = Path.Combine(_tempFolder, $"take_{_takeCounter}_source.wav");
+                File.Copy(window.CutResultPath, destinationPath, overwrite: true);
+                File.Delete(window.CutResultPath);
+
+                var take = new TakeItem
+                {
+                    FilePath = destinationPath,
+                    Name = string.Format(LocalizationManager.GetString("Str_TakeName"), _takeCounter)
+                };
+                _takes.Add(take);
+                TakesListBox.SelectedItem = take;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(this, string.Format(LocalizationManager.GetString("Str_ImportTakeFailed"), Path.GetFileName(window.CutResultPath), ex.Message),
+                    LocalizationManager.GetString("Str_TakesWindowTitle"), MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 

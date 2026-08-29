@@ -57,15 +57,13 @@
     <sys:String x:Key="Str_SquelchDurationLabel">Duration (ms):</sys:String>
     <sys:String x:Key="Str_SquelchVolumeLabel">Volume (0-1):</sys:String>
     <sys:String x:Key="Str_SquelchHint">Adds a short noise/click burst at the start and end of every generated file, like a typical radio squelch tail.</sys:String>
-    <sys:String x:Key="Str_PttHeader">Push-to-Talk Start/Stop Signal (PTT)</sys:String>
+    <sys:String x:Key="Str_PttHeader">Roger Beep (End of Transmission Signal)</sys:String>
     <sys:String x:Key="Str_PttAutoAdd">Add automatically</sys:String>
     <sys:String x:Key="Str_PttDurationLabel">Duration (ms):</sys:String>
     <sys:String x:Key="Str_PttVolumeLabel">Volume (0-1):</sys:String>
-    <sys:String x:Key="Str_PttStartFrequencyLabel">Start tone (Hz):</sys:String>
-    <sys:String x:Key="Str_PttEndFrequencyLabel">Stop tone (Hz):</sys:String>
-    <sys:String x:Key="Str_PttStartFileLabel">Custom start file:</sys:String>
-    <sys:String x:Key="Str_PttEndFileLabel">Custom stop file:</sys:String>
-    <sys:String x:Key="Str_PttHint">Adds a short tone sequence (two beeps) at the start and/or end of every generated file, like pressing/releasing the push-to-talk (PTT) button on a real radio. Can be enabled independently of the radio squelch above. Optionally, custom WAV files can be used instead of the generated tones.</sys:String>
+    <sys:String x:Key="Str_PttEndFrequencyLabel">Beep tone (Hz):</sys:String>
+    <sys:String x:Key="Str_PttEndFileLabel">Custom beep file:</sys:String>
+    <sys:String x:Key="Str_PttHint">Adds a short two-tone "Roger Beep" right after the end of every generated file, like a real radio operator releasing the push-to-talk (PTT) button to signal "transmission over". Real radios don't have an audible start signal (only the receiver's squelch opening, see above), so no tone is added at the start. Can be enabled independently of the radio squelch above. Optionally, a custom WAV file can be used instead of the generated tone.</sys:String>
     <sys:String x:Key="Str_Test">Test</sys:String>
     <sys:String x:Key="Str_TestAll">Test all together</sys:String>
     <sys:String x:Key="Str_TestHint">Plays a short synthetic test tone using the current (not yet saved) settings, so you can hear changes immediately.</sys:String>
@@ -110,10 +108,8 @@
     <sys:String x:Key="Str_ColumnTextTooltip">The message text to be spoken</sys:String>
     <sys:String x:Key="Str_ColumnSourceTooltip">Source of the audio (e.g., Google AI, Recording)</sys:String>
     <sys:String x:Key="Str_ColumnRadioEffectTooltip">Apply the radio effect to this message, if enabled in settings</sys:String>
-    <sys:String x:Key="Str_ColumnPttStart">PTT Start</sys:String>
-    <sys:String x:Key="Str_ColumnPttStartTooltip">Add the PTT start beep to this message, if enabled in settings</sys:String>
-    <sys:String x:Key="Str_ColumnPttEnd">PTT End</sys:String>
-    <sys:String x:Key="Str_ColumnPttEndTooltip">Add the PTT stop beep to this message, if enabled in settings</sys:String>
+    <sys:String x:Key="Str_ColumnPttEnd">Roger Beep</sys:String>
+    <sys:String x:Key="Str_ColumnPttEndTooltip">Add the Roger Beep to the end of this message, if enabled in settings</sys:String>
     <sys:String x:Key="Str_BulkToggleLabel">Set for all rows:</sys:String>
     <sys:String x:Key="Str_CheckAll">Check all</sys:String>
     <sys:String x:Key="Str_UncheckAll">Uncheck all</sys:String>
@@ -202,6 +198,18 @@
     <sys:String x:Key="Str_Failed">Failed.</sys:String>
     <sys:String x:Key="Str_NoGoogleApiKeyForTranslation">Please configure a Google API key under 'Settings' first (the Cloud Translation API must be enabled).</sys:String>
     <sys:String x:Key="Str_TranslationFailed">Translation failed:</sys:String>
-    <sys:String x:Key="Str_PackGenerationFailed">Pack generation failed:</sys:String>
+
+    <!-- SourceRecordingWindow -->
+    <sys:String x:Key="Str_CutFromSourceRecording">Cut From Source Recording</sys:String>
+    <sys:String x:Key="Str_SourceRecordingsWindowTitle">Source Recordings</sys:String>
+    <sys:String x:Key="Str_ImportSourceRecording">Import Source Recording</sys:String>
+    <sys:String x:Key="Str_ImportingSourceRecording">Importing '{0}'...</sys:String>
+    <sys:String x:Key="Str_ImportSourceRecordingFailed">Source recording could not be imported: {0}</sys:String>
+    <sys:String x:Key="Str_ConfirmDeleteSourceRecording">Really delete this source recording? Takes already cut from it are kept.</sys:String>
+    <sys:String x:Key="Str_UsedRegionsHint">Already used regions (may overlap, informational only):</sys:String>
+    <sys:String x:Key="Str_UseCutSegment">Use Cut Segment</sys:String>
+    <sys:String x:Key="Str_SelectSourceRecordingFirst">Please select a source recording first.</sys:String>
+    <sys:String x:Key="Str_Close">Close</sys:String>
+
 
 </ResourceDictionary>

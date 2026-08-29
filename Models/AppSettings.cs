@@ -83,22 +83,12 @@ namespace iRacing_Spotter_Generator.Models
         public double PttVolume { get; set; } = 0.5;
 
         /// <summary>
-        /// Frequency (Hz) of the synthesized "start talking" beep.
-        /// </summary>
-        public int PttStartFrequencyHz { get; set; } = 1000;
-
-        /// <summary>
-        /// Frequency (Hz) of the synthesized "stop talking" beep.
+        /// Frequency (Hz) of the synthesized "stop talking" Roger Beep.
         /// </summary>
         public int PttEndFrequencyHz { get; set; } = 800;
 
         /// <summary>
-        /// Optional custom WAV file used instead of the synthesized start beep.
-        /// </summary>
-        public string? PttStartFilePath { get; set; }
-
-        /// <summary>
-        /// Optional custom WAV file used instead of the synthesized end beep.
+        /// Optional custom WAV file used instead of the synthesized Roger Beep.
         /// </summary>
         public string? PttEndFilePath { get; set; }
 

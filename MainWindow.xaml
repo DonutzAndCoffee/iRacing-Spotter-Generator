@@ -156,16 +156,8 @@
                     <Button Content="{DynamicResource Str_Test}" Padding="8,2" Click="PttTestButton_Click"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
-                    <TextBlock Text="{DynamicResource Str_PttStartFrequencyLabel}" VerticalAlignment="Center" Margin="0,0,5,0"/>
-                    <TextBox x:Name="PttStartFrequencyTextBox" Width="60" VerticalAlignment="Center" Margin="0,0,20,0"/>
                     <TextBlock Text="{DynamicResource Str_PttEndFrequencyLabel}" VerticalAlignment="Center" Margin="0,0,5,0"/>
                     <TextBox x:Name="PttEndFrequencyTextBox" Width="60" VerticalAlignment="Center"/>
-                </StackPanel>
-                <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
-                    <TextBlock Text="{DynamicResource Str_PttStartFileLabel}" VerticalAlignment="Center" Margin="0,0,5,0"/>
-                    <TextBox x:Name="PttStartFileTextBox" Width="250" VerticalAlignment="Center" IsReadOnly="True"/>
-                    <Button Content="{DynamicResource Str_Browse}" Margin="5,0,5,0" Padding="8,2" Click="PttStartFileBrowseButton_Click"/>
-                    <Button Content="{DynamicResource Str_Clear}" Padding="8,2" Click="PttStartFileClearButton_Click"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
                     <TextBlock Text="{DynamicResource Str_PttEndFileLabel}" VerticalAlignment="Center" Margin="0,0,5,0"/>
@@ -221,24 +213,29 @@
 
         <!-- Message grid -->
         <!-- Bulk row toggles -->
-        <StackPanel Grid.Row="3" Orientation="Horizontal" Margin="0,0,0,5">
-            <TextBlock Text="{DynamicResource Str_BulkToggleLabel}" VerticalAlignment="Center" Margin="0,0,10,0" FontWeight="Bold"/>
-            <TextBlock Text="{DynamicResource Str_ColumnStartTooltip}" VerticalAlignment="Center" Margin="0,0,4,0"/>
-            <Button Content="{DynamicResource Str_CheckAll}" Tag="AddSquelchStart:True" Click="BulkToggleColumnButton_Click" Padding="6,2" Margin="0,0,2,0"/>
-            <Button Content="{DynamicResource Str_UncheckAll}" Tag="AddSquelchStart:False" Click="BulkToggleColumnButton_Click" Padding="6,2" Margin="0,0,15,0"/>
-            <TextBlock Text="{DynamicResource Str_ColumnEndTooltip}" VerticalAlignment="Center" Margin="0,0,4,0"/>
-            <Button Content="{DynamicResource Str_CheckAll}" Tag="AddSquelchEnd:True" Click="BulkToggleColumnButton_Click" Padding="6,2" Margin="0,0,2,0"/>
-            <Button Content="{DynamicResource Str_UncheckAll}" Tag="AddSquelchEnd:False" Click="BulkToggleColumnButton_Click" Padding="6,2" Margin="0,0,15,0"/>
-            <TextBlock Text="{DynamicResource Str_ColumnRadioEffectTooltip}" VerticalAlignment="Center" Margin="0,0,4,0"/>
-            <Button Content="{DynamicResource Str_CheckAll}" Tag="AddRadioEffect:True" Click="BulkToggleColumnButton_Click" Padding="6,2" Margin="0,0,2,0"/>
-            <Button Content="{DynamicResource Str_UncheckAll}" Tag="AddRadioEffect:False" Click="BulkToggleColumnButton_Click" Padding="6,2" Margin="0,0,15,0"/>
-            <TextBlock Text="{DynamicResource Str_ColumnPttStartTooltip}" VerticalAlignment="Center" Margin="0,0,4,0"/>
-            <Button Content="{DynamicResource Str_CheckAll}" Tag="AddPttStart:True" Click="BulkToggleColumnButton_Click" Padding="6,2" Margin="0,0,2,0"/>
-            <Button Content="{DynamicResource Str_UncheckAll}" Tag="AddPttStart:False" Click="BulkToggleColumnButton_Click" Padding="6,2" Margin="0,0,15,0"/>
-            <TextBlock Text="{DynamicResource Str_ColumnPttEndTooltip}" VerticalAlignment="Center" Margin="0,0,4,0"/>
-            <Button Content="{DynamicResource Str_CheckAll}" Tag="AddPttEnd:True" Click="BulkToggleColumnButton_Click" Padding="6,2" Margin="0,0,2,0"/>
-            <Button Content="{DynamicResource Str_UncheckAll}" Tag="AddPttEnd:False" Click="BulkToggleColumnButton_Click" Padding="6,2"/>
-        </StackPanel>
+        <WrapPanel Grid.Row="3" Orientation="Horizontal" Margin="0,0,0,5">
+            <TextBlock Text="{DynamicResource Str_BulkToggleLabel}" VerticalAlignment="Center" Margin="0,0,10,2" FontWeight="Bold"/>
+            <StackPanel Orientation="Horizontal" Margin="0,0,15,2">
+                <TextBlock Text="{DynamicResource Str_ColumnStartTooltip}" VerticalAlignment="Center" Margin="0,0,4,0"/>
+                <Button Content="{DynamicResource Str_CheckAll}" Tag="AddSquelchStart:True" Click="BulkToggleColumnButton_Click" Padding="6,2" Margin="0,0,2,0"/>
+                <Button Content="{DynamicResource Str_UncheckAll}" Tag="AddSquelchStart:False" Click="BulkToggleColumnButton_Click" Padding="6,2"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Margin="0,0,15,2">
+                <TextBlock Text="{DynamicResource Str_ColumnEndTooltip}" VerticalAlignment="Center" Margin="0,0,4,0"/>
+                <Button Content="{DynamicResource Str_CheckAll}" Tag="AddSquelchEnd:True" Click="BulkToggleColumnButton_Click" Padding="6,2" Margin="0,0,2,0"/>
+                <Button Content="{DynamicResource Str_UncheckAll}" Tag="AddSquelchEnd:False" Click="BulkToggleColumnButton_Click" Padding="6,2"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Margin="0,0,15,2">
+                <TextBlock Text="{DynamicResource Str_ColumnRadioEffectTooltip}" VerticalAlignment="Center" Margin="0,0,4,0"/>
+                <Button Content="{DynamicResource Str_CheckAll}" Tag="AddRadioEffect:True" Click="BulkToggleColumnButton_Click" Padding="6,2" Margin="0,0,2,0"/>
+                <Button Content="{DynamicResource Str_UncheckAll}" Tag="AddRadioEffect:False" Click="BulkToggleColumnButton_Click" Padding="6,2"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Margin="0,0,0,2">
+                <TextBlock Text="{DynamicResource Str_ColumnPttEndTooltip}" VerticalAlignment="Center" Margin="0,0,4,0"/>
+                <Button Content="{DynamicResource Str_CheckAll}" Tag="AddPttEnd:True" Click="BulkToggleColumnButton_Click" Padding="6,2" Margin="0,0,2,0"/>
+                <Button Content="{DynamicResource Str_UncheckAll}" Tag="AddPttEnd:False" Click="BulkToggleColumnButton_Click" Padding="6,2"/>
+            </StackPanel>
+        </WrapPanel>
 
         <DataGrid x:Name="MessagesDataGrid" Grid.Row="4" AutoGenerateColumns="False"
                    CanUserAddRows="False" CanUserDeleteRows="False"
@@ -395,14 +392,6 @@
                     </DataGridCheckBoxColumn.Header>
                     <DataGridCheckBoxColumn.Binding>
                         <Binding Path="AddRadioEffect" UpdateSourceTrigger="PropertyChanged"/>
-                    </DataGridCheckBoxColumn.Binding>
-                </DataGridCheckBoxColumn>
-                <DataGridCheckBoxColumn Width="90">
-                    <DataGridCheckBoxColumn.Header>
-                        <TextBlock Text="{DynamicResource Str_ColumnPttStart}" ToolTip="{DynamicResource Str_ColumnPttStartTooltip}"/>
-                    </DataGridCheckBoxColumn.Header>
-                    <DataGridCheckBoxColumn.Binding>
-                        <Binding Path="AddPttStart" UpdateSourceTrigger="PropertyChanged"/>
                     </DataGridCheckBoxColumn.Binding>
                 </DataGridCheckBoxColumn>
                 <DataGridCheckBoxColumn Width="90">
